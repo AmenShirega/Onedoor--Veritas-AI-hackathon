@@ -3,10 +3,6 @@
 **A privacy-first, multilingual support-navigation platform for survivors of violence and harassment.**
 
 OneDoor helps individuals affected by sexual violence, domestic abuse, physical violence, or harassment identify their support needs, find local resources, and generate consent-controlled referral summaries—eliminating the trauma of repeatedly retelling their story to multiple providers.
-
-> **⚠️ Important Safety & Prototype Disclaimer:** 
-> *This project is a hackathon prototype and does not provide medical, legal, or professional advice.* OneDoor is **not** an emergency dispatch service and is not currently connected to live clinics or emergency responders. **If you are in immediate danger, please call your local emergency services.**
-
 ---
 
 ## 💡 The Problem & Our Solution
