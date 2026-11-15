@@ -36,49 +36,104 @@ export function DoorwayLogoMark(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function HeroDoorwayIllustration(props: SVGProps<SVGSVGElement>) {
+interface HeroDoorwayProps extends SVGProps<SVGSVGElement> {
+  ariaLabel?: string;
+}
+
+export function HeroDoorwayIllustration({
+  ariaLabel = 'Animated OneDoor arched doorway opening gently toward warm interior light',
+  ...props
+}: HeroDoorwayProps) {
   return (
     <svg
       viewBox="0 0 420 360"
       fill="none"
       role="img"
-      aria-label="Illustration of an open arched doorway with warm interior light"
+      aria-label={ariaLabel}
       {...props}
     >
+      <defs>
+        <radialGradient id="onedoor-lantern-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#E9A23B" stopOpacity="0.95" />
+          <stop offset="55%" stopColor="#E9A23B" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#E9A23B" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="onedoor-threshold-grad" x1="210" y1="296" x2="210" y2="342" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#E9A23B" stopOpacity="0.38" />
+          <stop offset="100%" stopColor="#E9A23B" stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+
       {/* Soft sage architectural backdrop */}
-      <rect x="30" y="24" width="360" height="312" rx="180" fill="#DCE8E3" fillOpacity="0.65" />
-      {/* Warm threshold light spill */}
-      <path
-        d="M168 296L114 336H306L252 296H168Z"
-        fill="#E9A23B"
-        fillOpacity="0.22"
+      <rect x="26" y="20" width="368" height="320" rx="184" fill="#DCE8E3" fillOpacity="0.72" />
+      <rect
+        x="42"
+        y="36"
+        width="336"
+        height="288"
+        rx="168"
+        stroke="#0F3D3E"
+        strokeOpacity="0.12"
+        strokeWidth="1.5"
       />
+
+      {/* Breathing warm threshold light spill */}
+      <path
+        className="onedoor-anim-spill"
+        d="M164 296L102 340H318L256 296H164Z"
+        fill="url(#onedoor-threshold-grad)"
+      />
+
       {/* Main arched doorway frame */}
       <path
         d="M124 296V162C124 114.504 162.504 76 210 76C257.496 76 296 114.504 296 162V296"
         fill="#FAF6EF"
         stroke="#0F3D3E"
-        strokeWidth="2.5"
+        strokeWidth="2.8"
       />
-      {/* Inner warm glow */}
+
+      {/* Inner warm welcoming glow */}
       <path
+        className="onedoor-anim-glow"
         d="M148 296V164C148 129.758 175.758 102 210 102C244.242 102 272 129.758 272 164V296H148Z"
         fill="#E9A23B"
-        fillOpacity="0.16"
+        fillOpacity="0.22"
       />
-      {/* Open door leaf */}
-      <path
-        d="M148 296V164C148 134 170 108 198 103V282L148 296Z"
-        fill="#0F3D3E"
-      />
-      {/* Door handle */}
-      <circle cx="187" cy="204" r="3.5" fill="#E9A23B" />
-      {/* Guiding light ray / lantern */}
-      <circle cx="233" cy="176" r="14" fill="#E9A23B" fillOpacity="0.88" />
-      <circle cx="233" cy="176" r="24" stroke="#E9A23B" strokeWidth="1.5" strokeOpacity="0.45" />
+
+      {/* Subtle guiding halo & lantern core inside the open threshold */}
+      <g className="onedoor-anim-halo">
+        <circle cx="233" cy="176" r="44" fill="url(#onedoor-lantern-glow)" />
+        <circle
+          cx="233"
+          cy="176"
+          r="25"
+          stroke="#E9A23B"
+          strokeWidth="1.6"
+          strokeOpacity="0.55"
+        />
+      </g>
+      <circle cx="233" cy="176" r="13.5" fill="#E9A23B" fillOpacity="0.92" />
+      <circle cx="233" cy="176" r="6" fill="#FAF6EF" fillOpacity="0.7" />
+
+      {/* Gently opening inner door leaf */}
+      <g className="onedoor-anim-door">
+        <path
+          d="M148 296V164C148 134 170 108 198 103V282L148 296Z"
+          fill="#0F3D3E"
+        />
+        <path
+          d="M158 286V165C158 142 174 121 191 116V276L158 286Z"
+          stroke="#FAF6EF"
+          strokeOpacity="0.18"
+          strokeWidth="1.2"
+        />
+        {/* Door handle */}
+        <circle cx="187" cy="204" r="3.6" fill="#E9A23B" />
+      </g>
+
       {/* Threshold step lines */}
-      <path d="M96 296H324" stroke="#0F3D3E" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M116 312H304" stroke="#0F3D3E" strokeWidth="1.5" strokeOpacity="0.35" strokeLinecap="round" />
+      <path d="M92 296H328" stroke="#0F3D3E" strokeWidth="2.8" strokeLinecap="round" />
+      <path d="M114 313H306" stroke="#0F3D3E" strokeWidth="1.6" strokeOpacity="0.35" strokeLinecap="round" />
     </svg>
   );
 }

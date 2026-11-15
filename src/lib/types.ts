@@ -6,7 +6,27 @@ export type SupportCategoryId =
   | 'sexual_violence_support'
   | 'social_support';
 
-export type LanguageCode = 'en' | 'am';
+export type LanguageCode =
+  | 'en'
+  | 'am'
+  | 'es'
+  | 'fr'
+  | 'ar'
+  | 'pt'
+  | 'de'
+  | 'it'
+  | 'zh-Hans'
+  | 'zh-Hant'
+  | 'ja'
+  | 'ko'
+  | 'hi'
+  | 'bn'
+  | 'ur'
+  | 'sw'
+  | 'ru'
+  | 'tr'
+  | 'id'
+  | 'vi';
 
 export const SUPPORT_CATEGORY_IDS: SupportCategoryId[] = [
   'medical_support',
@@ -17,21 +37,25 @@ export const SUPPORT_CATEGORY_IDS: SupportCategoryId[] = [
   'social_support',
 ];
 
-export const ADDIS_SUBCITIES = [
-  'Prefer not to say',
-  'Bole',
-  'Kirkos',
-  'Yeka',
-  'Arada',
-  'Lideta',
-  'Kolfe Keranio',
-  'Nifas Silk-Lafto',
-  'Gullele',
-  'Akaky Kaliti',
-  'Lemi Kura',
-] as const;
+export interface UserLocation {
+  label: string;
+  city: string;
+  region: string;
+  country: string;
+  countryCode: string;
+  postalCode: string;
+  source: 'manual' | 'geolocation_confirmed';
+}
 
-export type AddisSubCity = (typeof ADDIS_SUBCITIES)[number];
+export interface GeocodedPlace {
+  id: string;
+  label: string;
+  city: string;
+  region: string;
+  country: string;
+  countryCode: string;
+  postalCode: string;
+}
 
 export interface ModelWeightsFile {
   model_version: string;
@@ -82,19 +106,25 @@ export interface ClassificationResult {
   nonEnglishWarning: boolean;
 }
 
+export type PartnerVerificationStatus = 'verified' | 'partner_integration_pending';
+
 export interface HelpingCenter {
   id: string;
   name: string;
-  synthetic: true;
-  subCity: Exclude<AddisSubCity, 'Prefer not to say'>;
-  serviceAreas: string[];
+  pathwayType: string;
+  verificationStatus: PartnerVerificationStatus;
+  countryCode: string;
+  countryName: string;
+  region: string;
+  city: string;
+  postalPrefixes: string[];
+  coverageScope: 'city' | 'region' | 'national';
   categories: SupportCategoryId[];
   hours24x7: boolean;
   hoursLabel: string;
   childSafeguardingCapable: boolean;
   languages: string[];
-  syntheticPhone: string;
-  syntheticAddress: string;
+  contactNote: string;
   description: string;
 }
 
@@ -105,19 +135,34 @@ export interface MatchedCenter {
   isFallbackGeneralist: boolean;
 }
 
-export type ReferralStatus = 'Received' | 'In Review' | 'Acknowledged (Demo)';
+export interface MatchingResult {
+  matches: MatchedCenter[];
+  verifiedServicesAvailable: boolean;
+  matchedScope: 'city' | 'region' | 'national' | 'global' | 'none';
+  reasonCode:
+    | 'matched_verified'
+    | 'no_verified_services_for_location'
+    | 'no_verified_services_configured'
+    | 'location_not_shared';
+}
+
+export type ReferralStatus = 'Saved locally (not transmitted)' | 'Withdrawn';
+
+export type ReferralDeliveryStatus =
+  | 'saved_locally_pending_partner_integration'
+  | 'withdrawn';
 
 export interface ReferralRecord {
   id: string;
   referenceCode: string;
   createdAt: string;
-  syntheticDemo: true;
   status: ReferralStatus;
+  deliveryStatus: ReferralDeliveryStatus;
   targetCenterId: string;
   targetCenterName: string;
   approvedSummary: string;
   approvedCategories: SupportCategoryId[];
-  approvedSubCity: string | null;
+  approvedLocation: string | null;
   urgencyFlagged: boolean;
   minorSafeguardingNoted: boolean;
   matchingExplanation: string[];

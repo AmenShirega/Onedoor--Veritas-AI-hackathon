@@ -1,39 +1,40 @@
-# OneDoor Prototype
+# OneDoor
 
-OneDoor is a privacy-first support entry point prototype designed around a young woman in Addis Ababa seeking help after violence or harassment without having to repeat her story across multiple institutions, alongside a simulated helping-center caseworker dashboard.
+OneDoor is an international, privacy-first support-navigation web platform built to help people affected by sexual violence, domestic abuse, physical violence, or harassment organize support needs and prepare consent-controlled referral summaries without repeatedly retelling their story.
 
-**Disclaimer:** This project is a prototype and is not medical advice. OneDoor is not an emergency service.
+> **Disclaimer:** *This project is a prototype and is not medical advice.* OneDoor is not an emergency dispatch service and is not yet connected to external clinics or emergency responders.
 
-## Architecture Overview
+---
 
-1. **ML Classifier (`/ml/train.py`, `/ml/train.ipynb`, `/ml/model_weights.json`)**:
-   - Multi-label TF-IDF (unigrams + bigrams) + L2-regularized Logistic Regression classifier trained on 200 synthetic Addis Ababa support descriptions (`/ml/synthetic_dataset.json`, 70/30 stratified split).
-   - Evaluates against Majority-Class and Keyword-Rule baselines on a strictly held-out test set (`n = 60`), including False Negatives, False Positives, language-style slices, and message-length slices (`/ml/evaluation_results.json`).
-   - Performs inference directly in TypeScript (`/src/lib/mlInference.ts`) from exported weights (`/ml/model_weights.json`).
-2. **Separate Matching Algorithm (`/src/lib/matching.ts`)**:
-   - Ranks clearly marked synthetic Addis Ababa helping centers (`/src/lib/directory.ts`) by category alignment, manual sub-city, 24/7 urgent hours, and minor safeguarding capability—never denying support options when model confidence is low.
-3. **Optional Gemini Explanation & Summary (`/server.ts` `/api/explain`)**:
-   - Uses `@google/genai` (`gemini-4-hydrogen`) when `GEMINI_API_KEY` is configured to draft empathetic explanations and referral summaries; falls back seamlessly to deterministic templates when no key is set.
-   - Never used as the primary classifier and never makes safety decisions.
-4. **Consent-Gated Referral & Simulated Caseworker View (`/data/referrals.json`)**:
-   - Nothing is shared until the person reviews, edits, and explicitly checks consent approval.
+## Core Capabilities
 
-## Setup & Commands
+1. **20-Language Localized Interface (with RTL & Persistence)**
+   - Searchable language selector positioned directly beside the **Quick Exit** button in the header.
+   - Supports English, Amharic, Spanish, French, Arabic (RTL), Portuguese, German, Italian, Chinese (Simplified), Chinese (Traditional), Japanese, Korean, Hindi, Bengali, Urdu (RTL), Swahili, Russian, Turkish, Indonesian, and Vietnamese.
+   - Persists language selection across visits via `localStorage` and dynamically updates `<html lang dir>`.
+2. **International Location Lookup & Matching Engine**
+   - Manual location entry and international geocoding autocomplete (`GET /api/location/search`) by city, region, postal code, or country.
+   - Optional, explicit-click browser geolocation (`Use my current location`) with privacy-preserving server-side reverse geocoding (`POST /api/location/reverse`) and explicit user confirmation before use.
+   - Strict country/region/city service matching (`src/lib/matching.ts`) that communicates honestly when no verified local providers are onboarded for a selected location.
+3. **Trained Machine-Learning Classifier (English Text)**
+   - TF-IDF + L2 Logistic Regression classifier (`ml/model_weights.json`, `src/lib/mlInference.ts`) predicting 6 support pathways and non-diagnostic urgency with explicit uncertainty indicators.
+   - Transparently separates UI translation (20 languages) from ML model training language (English).
+4. **Consent-Gated Referral Summaries**
+   - Editable summary, granular inclusion toggles (location, urgency note), copy/download (`.txt`), and local reference-code storage (`OD-REF-XXXXXX`) with permanent withdrawal/deletion (`DELETE /api/referrals/:referenceCode`).
+
+---
+
+## Local Development
 
 ```bash
-# Install Node dependencies
 npm install
-
-# Train & evaluate ML model (exports weights & held-out metrics)
-python3 ml/train.py
-
-# Run unit tests
-npx --yes tsx --test src/lib/core.test.ts
-
-# Start full-stack dev server (port 3000)
 npm run dev
+```
 
-# Build for production
+Run tests, typecheck, lint, and production build:
+
+```bash
+npx tsx --test src/lib/core.test.ts
+npm run lint
 npm run build
-npm start
 ```

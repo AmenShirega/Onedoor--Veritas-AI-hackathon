@@ -15,12 +15,36 @@
   html {
     background-color: #faf6ef;
     color: #14202b;
-    font-family: 'Manrope', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family:
+      'Manrope',
+      'Noto Sans Ethiopic',
+      'Noto Sans Arabic',
+      'Noto Sans Devanagari',
+      'Noto Sans Bengali',
+      'Noto Sans SC',
+      'Noto Sans TC',
+      'Noto Sans JP',
+      'Noto Sans KR',
+      -apple-system,
+      BlinkMacSystemFont,
+      sans-serif;
     scroll-behavior: smooth;
   }
 
   h1, h2, h3, h4, .font-display {
-    font-family: 'Plus Jakarta Sans', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family:
+      'Plus Jakarta Sans',
+      'Noto Sans Ethiopic',
+      'Noto Sans Arabic',
+      'Noto Sans Devanagari',
+      'Noto Sans Bengali',
+      'Noto Sans SC',
+      'Noto Sans TC',
+      'Noto Sans JP',
+      'Noto Sans KR',
+      -apple-system,
+      BlinkMacSystemFont,
+      sans-serif;
   }
 
   .font-mono-tabular {
@@ -33,6 +57,73 @@
   }
 }
 
+/* Restrained, calming doorway hero animations (compositor properties only) */
+@keyframes onedoor-glow-breathe {
+  0%, 100% {
+    opacity: 0.14;
+    transform: scale(0.98);
+  }
+  45%, 60% {
+    opacity: 0.34;
+    transform: scale(1.03);
+  }
+}
+
+@keyframes onedoor-threshold-spill {
+  0%, 100% {
+    opacity: 0.14;
+    transform: scaleY(0.94);
+  }
+  45%, 60% {
+    opacity: 0.34;
+    transform: scaleY(1.04);
+  }
+}
+
+@keyframes onedoor-door-reveal {
+  0%, 100% {
+    transform: scaleX(0.96);
+  }
+  45%, 60% {
+    transform: scaleX(0.76);
+  }
+}
+
+@keyframes onedoor-lantern-halo {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.95);
+  }
+  45%, 60% {
+    opacity: 0.65;
+    transform: scale(1.12);
+  }
+}
+
+.onedoor-anim-glow {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: onedoor-glow-breathe 7s ease-in-out infinite;
+}
+
+.onedoor-anim-spill {
+  transform-box: fill-box;
+  transform-origin: center top;
+  animation: onedoor-threshold-spill 7s ease-in-out infinite;
+}
+
+.onedoor-anim-door {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: onedoor-door-reveal 7s ease-in-out infinite;
+}
+
+.onedoor-anim-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: onedoor-lantern-halo 7s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -40,5 +131,13 @@
   *, *::before, *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  .onedoor-anim-glow,
+  .onedoor-anim-spill,
+  .onedoor-anim-door,
+  .onedoor-anim-halo {
+    animation: none !important;
+    transform: none !important;
   }
 }

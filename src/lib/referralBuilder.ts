@@ -1,11 +1,11 @@
-import type { AddisSubCity, SupportCategoryId } from './types';
+import type { SupportCategoryId } from './types';
 
 export interface ReferralDraftInput {
   consentApproved: boolean;
   approvedSummary: string;
   approvedCategories: SupportCategoryId[];
-  includeSubCity: boolean;
-  subCity: AddisSubCity | string;
+  includeLocation: boolean;
+  locationLabel: string | null;
   includeUrgencyFlag: boolean;
   urgencyFlagged: boolean;
   minorSafeguardingNoted: boolean;
@@ -19,7 +19,7 @@ export interface SanitizedReferralPayload {
   targetCenterName: string;
   approvedSummary: string;
   approvedCategories: SupportCategoryId[];
-  approvedSubCity: string | null;
+  approvedLocation: string | null;
   urgencyFlagged: boolean;
   minorSafeguardingNoted: boolean;
   matchingExplanation: string[];
@@ -27,7 +27,7 @@ export interface SanitizedReferralPayload {
 
 /**
  * Validates explicit consent and builds a strictly minimized payload containing
- * ONLY the fields the user explicitly chose to share.
+ * ONLY the fields the user explicitly chose to include.
  */
 export function buildConsentedReferralPayload(
   input: ReferralDraftInput
@@ -35,7 +35,7 @@ export function buildConsentedReferralPayload(
   if (!input.consentApproved) {
     return {
       ok: false,
-      error: 'Explicit approval is required before preparing a demo referral.',
+      error: 'Explicit approval is required before preparing and saving a referral summary.',
     };
   }
 
@@ -43,32 +43,28 @@ export function buildConsentedReferralPayload(
   if (trimmedSummary.length < 10) {
     return {
       ok: false,
-      error: 'Please keep or write at least a brief 10-character summary to share.',
+      error: 'Please keep or write at least a brief 10-character summary.',
     };
   }
 
-  if (!input.targetCenterId || !input.targetCenterName) {
-    return {
-      ok: false,
-      error: 'Please select a helping center for this demo referral.',
-    };
-  }
+  const targetId = input.targetCenterId.trim() || 'self-directed-summary';
+  const targetName =
+    input.targetCenterName.trim() ||
+    'Personal referral summary (no external service connected yet)';
 
-  const approvedSubCity =
-    input.includeSubCity &&
-    input.subCity &&
-    input.subCity !== 'Prefer not to say'
-      ? input.subCity
+  const approvedLocation =
+    input.includeLocation && input.locationLabel && input.locationLabel.trim()
+      ? input.locationLabel.trim().slice(0, 120)
       : null;
 
   return {
     ok: true,
     payload: {
-      targetCenterId: input.targetCenterId,
-      targetCenterName: input.targetCenterName,
+      targetCenterId: targetId,
+      targetCenterName: targetName,
       approvedSummary: trimmedSummary,
       approvedCategories: [...new Set(input.approvedCategories)],
-      approvedSubCity,
+      approvedLocation,
       urgencyFlagged: input.includeUrgencyFlag ? input.urgencyFlagged : false,
       minorSafeguardingNoted: input.minorSafeguardingNoted,
       matchingExplanation: input.matchingExplanation.slice(0, 4),
