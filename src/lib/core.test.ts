@@ -9,9 +9,16 @@ import {
   mergeTranscriptChunk,
 } from './audioPcm';
 import { VERIFIED_SERVICE_DIRECTORY } from './directory';
-import { CALL_TRANSLATIONS, FLOW_TRANSLATIONS, LANGUAGES, TRANSLATIONS } from './i18n';
+import { CALL_TRANSLATIONS, FLOW_TRANSLATIONS, LANGUAGES, NEARBY_TRANSLATIONS, TRANSLATIONS } from './i18n';
 import { classifyWithWeights, detectNonEnglishScript } from './mlInference';
 import { rankHelpingCenters } from './matching';
+import {
+  buildGoogleDirectionsUrl,
+  computeHaversineDistanceKm,
+  determineVerificationTier,
+  scoreAndRankNearbyPlaces,
+  selectTopBalancedCenters,
+} from './nearbyMatching';
 import { buildConsentedReferralPayload } from './referralBuilder';
 import type { HelpingCenter, ModelWeightsFile, UserLocation } from './types';
 
@@ -257,3 +264,199 @@ test('audioPcm helpers downsample 48kHz -> 16kHz PCM, round-trip base64, and mer
   transcript = mergeTranscriptChunk(transcript, ', please.');
   assert.equal(transcript, 'I need safe shelter, please.');
 });
+
+test('NEARBY_TRANSLATIONS covers all 20 languages with required labels', () => {
+  for (const lang of LANGUAGES) {
+    const pack = NEARBY_TRANSLATIONS[lang.code];
+    assert.ok(pack, `Missing nearby translation pack for ${lang.code}`);
+    assert.ok(pack.promptCardTitle.trim().length > 3);
+    assert.ok(pack.confirmLocationBtn.trim().length > 3);
+    assert.ok(pack.temporaryBanner.trim().length > 10);
+    assert.ok(pack.badgeVerifiedPartner.trim().length > 3);
+    assert.ok(pack.badgePublicDirectory.trim().length > 3);
+    assert.ok(pack.badgeIncomplete.trim().length > 3);
+    assert.ok(pack.hoursUnverified.trim().length > 5);
+    assert.ok(pack.directionsBtn.trim().length > 1);
+    assert.ok(pack.broadenSearchBtn.trim().length > 2);
+  }
+});
+
+test('nearbyMatching computes Haversine km distance, verification tiers, and Google Directions links cleanly', () => {
+  // London (51.5074, -0.1278) to Heathrow (~23 km west)
+  const km = computeHaversineDistanceKm(51.5074, -0.1278, 51.47, -0.4543);
+  assert.ok(km > 20 && km < 26, `Expected ~23 km, got ${km}`);
+
+  assert.equal(
+    determineVerificationTier({
+      id: 'partner-1',
+      name: 'Verified Partner Hub',
+      serviceTypeLabel: 'Support hub',
+      address: '10 Main St',
+      isVerifiedPartner: true,
+    }),
+    'verified_partner'
+  );
+
+  assert.equal(
+    determineVerificationTier({
+      id: 'dir-1',
+      name: 'City Hospital',
+      serviceTypeLabel: 'Hospital',
+      address: '20 Care Rd',
+      phone: '+44 20 7946 0000',
+      businessStatus: 'OPERATIONAL',
+    }),
+    'google_maps_directory'
+  );
+
+  assert.equal(
+    determineVerificationTier({
+      id: 'inc-1',
+      name: 'Unlisted Drop-in',
+      serviceTypeLabel: 'Clinic',
+      address: '30 Side St',
+      phone: null,
+      websiteUri: null,
+    }),
+    'incomplete_listing'
+  );
+
+  const dirUrl = buildGoogleDirectionsUrl({
+    lat: 51.5,
+    lon: -0.12,
+    name: 'City Hospital',
+    address: '20 Care Rd',
+  });
+  assert.equal(
+    dirUrl,
+    'https://www.google.com/maps/dir/?api=1&destination=51.5%2C-0.12'
+  );
+});
+
+test('scoreAndRankNearbyPlaces ranks strictly by relevance first then distance, keeps unverified hours null, and filters closed/commercial noise', () => {
+  const origin = { lat: 51.5074, lon: -0.1278 };
+  const ranked = scoreAndRankNearbyPlaces(
+    [
+      // Very close (0.5 km) but only matches 1 generic type (low relevance)
+      {
+        id: 'close-office',
+        name: 'Borough Civic Office',
+        serviceTypeLabel: 'Local office',
+        primaryType: 'local_government_office',
+        types: ['local_government_office'],
+        address: '1 Close St',
+        lat: 51.508,
+        lon: -0.128,
+        phone: '+44 20 0000 0001',
+        openNowVerified: null,
+      },
+      // Further away (~4 km) but strongly matches BOTH medical_support & sexual_violence_support
+      {
+        id: 'relevant-hospital-far',
+        name: 'St Thomas Sexual Assault & Emergency Hospital',
+        serviceTypeLabel: 'Hospital',
+        primaryType: 'hospital',
+        types: ['hospital', 'medical_clinic'],
+        address: '10 Lambeth Rd',
+        lat: 51.498,
+        lon: -0.18,
+        phone: '+44 20 0000 0002',
+        websiteUri: 'https://example.org/hospital',
+        openNowVerified: true,
+      },
+      // Equal relevance to hospital-far if same match, closer (~1.5 km) -> should beat hospital-far on distance tiebreaker
+      {
+        id: 'relevant-hospital-near',
+        name: 'Central Sexual Assault & Emergency Hospital',
+        serviceTypeLabel: 'Hospital',
+        primaryType: 'hospital',
+        types: ['hospital', 'medical_clinic'],
+        address: '5 Central Rd',
+        lat: 51.515,
+        lon: -0.14,
+        phone: '+44 20 0000 0003',
+        openNowVerified: false,
+      },
+      // Permanently closed -> excluded
+      {
+        id: 'closed-clinic',
+        name: 'Closed Clinic',
+        serviceTypeLabel: 'Clinic',
+        primaryType: 'medical_clinic',
+        types: ['medical_clinic'],
+        address: '9 Old Rd',
+        lat: 51.507,
+        lon: -0.127,
+        phone: '+44 20 0000 0004',
+        businessStatus: 'CLOSED_PERMANENTLY',
+      },
+      // Commercial restaurant -> excluded
+      {
+        id: 'noise-cafe',
+        name: 'Corner Cafe',
+        serviceTypeLabel: 'Cafe',
+        primaryType: 'cafe',
+        types: ['cafe', 'restaurant'],
+        address: '2 Cafe Ln',
+        lat: 51.5075,
+        lon: -0.1275,
+        phone: '+44 20 0000 0005',
+      },
+      // Non-crisis wellness/acupuncture listing -> excluded
+      {
+        id: 'noise-acupuncture',
+        name: 'City Acupuncture and Chakra Therapy',
+        serviceTypeLabel: 'Medical clinic',
+        primaryType: 'medical_clinic',
+        types: ['medical_clinic'],
+        address: '3 Wellness Ln',
+        lat: 51.5074,
+        lon: -0.1278,
+        phone: '+44 20 0000 0006',
+      },
+    ],
+    ['medical_support', 'sexual_violence_support'],
+    origin
+  );
+
+  assert.equal(ranked.length, 3);
+  assert.equal(ranked[0].id, 'relevant-hospital-near');
+  assert.equal(ranked[1].id, 'relevant-hospital-far');
+  assert.equal(ranked[2].id, 'close-office');
+  assert.ok(ranked[0].distanceKm! < ranked[1].distanceKm!);
+  assert.equal(ranked[0].openNowVerified, false);
+  assert.equal(ranked[1].openNowVerified, true);
+  assert.equal(ranked[2].openNowVerified, null);
+
+  const manyMedicalAndLegal = [
+    ...Array.from({ length: 10 }, (_, idx) => ({
+      ...ranked[0],
+      id: `med-${idx}`,
+      name: `Hospital ${idx}`,
+      matchedCategories: ['medical_support'] as const,
+      relevanceScore: 46,
+      distanceKm: idx + 1,
+    })),
+    {
+      ...ranked[2],
+      id: 'legal-1',
+      name: 'RCJ Legal Aid',
+      matchedCategories: ['legal_support'] as const,
+      relevanceScore: 40,
+      distanceKm: 1.3,
+    },
+  ];
+  const balanced = selectTopBalancedCenters(
+    manyMedicalAndLegal.map((item) => ({
+      ...item,
+      matchedCategories: [...item.matchedCategories],
+    })),
+    ['medical_support', 'legal_support'],
+    6
+  );
+  assert.equal(balanced.length, 6);
+  assert.ok(balanced.some((c) => c.id === 'legal-1'));
+  assert.equal(balanced[0].id, 'med-0');
+  assert.equal(balanced[balanced.length - 1].id, 'legal-1');
+});
+

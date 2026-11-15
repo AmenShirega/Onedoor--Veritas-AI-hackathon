@@ -13,6 +13,12 @@ import {
 } from '@google/genai';
 import { classifyWithWeights } from './src/lib/mlInference';
 import { rankHelpingCenters } from './src/lib/matching';
+import {
+  buildCategorySearchPlans,
+  scoreAndRankNearbyPlaces,
+  selectTopBalancedCenters,
+  type NearbyPlaceCandidate,
+} from './src/lib/nearbyMatching';
 import { VERIFIED_SERVICE_DIRECTORY } from './src/lib/directory';
 import { LANGUAGE_MAP } from './src/lib/i18n/languages';
 import {
@@ -20,6 +26,7 @@ import {
   type GeocodedPlace,
   type LanguageCode,
   type ModelWeightsFile,
+  type NearbySearchResponse,
   type ReferralRecord,
   type SupportCategoryId,
   type UserLocation,
@@ -84,6 +91,8 @@ interface NominatimAddress {
 
 interface NominatimResultItem {
   place_id?: number | string;
+  lat?: string | number;
+  lon?: string | number;
   address?: NominatimAddress;
   name?: string;
   display_name?: string;
@@ -112,6 +121,8 @@ function sanitizeNominatimPlace(item: NominatimResultItem, fallbackIndex = 0): G
     new Set([city, region, country].filter((p) => p.length > 0))
   );
   const label = labelParts.join(', ') || item.name || 'Selected area';
+  const parsedLat = item.lat !== undefined ? Number(item.lat) : NaN;
+  const parsedLon = item.lon !== undefined ? Number(item.lon) : NaN;
 
   return {
     id: String(item.place_id ?? `${countryCode}-${city}-${fallbackIndex}`),
@@ -121,6 +132,14 @@ function sanitizeNominatimPlace(item: NominatimResultItem, fallbackIndex = 0): G
     country,
     countryCode,
     postalCode,
+    ...(Number.isFinite(parsedLat) &&
+    Number.isFinite(parsedLon) &&
+    parsedLat >= -90 &&
+    parsedLat <= 90 &&
+    parsedLon >= -180 &&
+    parsedLon <= 180
+      ? { lat: Math.round(parsedLat * 10000) / 10000, lon: Math.round(parsedLon * 10000) / 10000 }
+      : {}),
   };
 }
 
@@ -135,6 +154,15 @@ function sanitizeUserLocation(raw: unknown): UserLocation | null {
   const postalCode =
     typeof obj.postalCode === 'string' ? obj.postalCode.trim().slice(0, 24) : '';
   const labelRaw = typeof obj.label === 'string' ? obj.label.trim().slice(0, 140) : '';
+  const lat = typeof obj.lat === 'number' ? obj.lat : Number(obj.lat);
+  const lon = typeof obj.lon === 'number' ? obj.lon : Number(obj.lon);
+  const hasCoords =
+    Number.isFinite(lat) &&
+    Number.isFinite(lon) &&
+    lat >= -90 &&
+    lat <= 90 &&
+    lon >= -180 &&
+    lon <= 180;
 
   if (!country && !city && !labelRaw) return null;
   const label =
@@ -148,6 +176,7 @@ function sanitizeUserLocation(raw: unknown): UserLocation | null {
     country,
     countryCode,
     postalCode,
+    ...(hasCoords ? { lat, lon } : {}),
     source: obj.source === 'geolocation_confirmed' ? 'geolocation_confirmed' : 'manual',
   };
 }
@@ -285,6 +314,394 @@ async function startServer() {
 
   app.get('/api/centers', (_req, res) => {
     res.json({ centers: VERIFIED_SERVICE_DIRECTORY });
+  });
+
+  const PLACES_FIELD_MASK =
+    'places.id,places.displayName,places.formattedAddress,places.shortFormattedAddress,places.location,places.primaryType,places.primaryTypeDisplayName,places.types,places.businessStatus,places.googleMapsUri,places.googleMapsLinks.directionsUri,places.internationalPhoneNumber,places.nationalPhoneNumber,places.websiteUri,places.currentOpeningHours.openNow';
+
+  const getMapsApiKey = (): string | null => {
+    const raw =
+      process.env.GOOGLE_MAPS_API_KEY ||
+      process.env.VITE_GOOGLE_MAPS_API_KEY ||
+      '';
+    const trimmed = raw.trim();
+    if (
+      !trimmed ||
+      trimmed === 'MY_GOOGLE_MAPS_API_KEY' ||
+      trimmed.startsWith('YOUR_')
+    ) {
+      return null;
+    }
+    return trimmed;
+  };
+
+  interface GooglePlaceRaw {
+    id?: string;
+    displayName?: { text?: string; languageCode?: string };
+    formattedAddress?: string;
+    shortFormattedAddress?: string;
+    location?: { latitude?: number; longitude?: number };
+    primaryType?: string;
+    primaryTypeDisplayName?: { text?: string };
+    types?: string[];
+    businessStatus?: string;
+    googleMapsUri?: string;
+    googleMapsLinks?: { directionsUri?: string };
+    internationalPhoneNumber?: string;
+    nationalPhoneNumber?: string;
+    websiteUri?: string;
+    currentOpeningHours?: { openNow?: boolean };
+  }
+
+  function mapGooglePlaceToCandidate(place: GooglePlaceRaw): NearbyPlaceCandidate | null {
+    const name = place.displayName?.text?.trim() ?? '';
+    const id = place.id?.trim() ?? '';
+    if (!id || !name) return null;
+    const address =
+      place.formattedAddress?.trim() || place.shortFormattedAddress?.trim() || '';
+    const lat = place.location?.latitude;
+    const lon = place.location?.longitude;
+
+    return {
+      id: `gplace-${id}`,
+      name,
+      serviceTypeLabel:
+        place.primaryTypeDisplayName?.text?.trim() ||
+        place.primaryType?.replace(/_/g, ' ') ||
+        'Support facility',
+      primaryType: place.primaryType,
+      types: Array.isArray(place.types) ? place.types : [],
+      address,
+      ...(typeof lat === 'number' && typeof lon === 'number' ? { lat, lon } : {}),
+      phone:
+        place.internationalPhoneNumber?.trim() ||
+        place.nationalPhoneNumber?.trim() ||
+        null,
+      websiteUri: place.websiteUri?.trim() || null,
+      directionsUri: place.googleMapsLinks?.directionsUri,
+      googleMapsUri: place.googleMapsUri,
+      openNowVerified:
+        typeof place.currentOpeningHours?.openNow === 'boolean'
+          ? place.currentOpeningHours.openNow
+          : null,
+      businessStatus: place.businessStatus,
+      isVerifiedPartner: false,
+    };
+  }
+
+  // Resolve city/area text to coordinates via Google Geocoding API v4 (with Nominatim fallback)
+  async function resolveOriginCoordinates(
+    location: UserLocation,
+    mapsApiKey: string | null
+  ): Promise<{ coords: { lat: number; lon: number } | null; quotaExceeded: boolean }> {
+    if (
+      typeof location.lat === 'number' &&
+      typeof location.lon === 'number' &&
+      Number.isFinite(location.lat) &&
+      Number.isFinite(location.lon)
+    ) {
+      return { coords: { lat: location.lat, lon: location.lon }, quotaExceeded: false };
+    }
+
+    if (mapsApiKey) {
+      try {
+        const geocodeUrl = `https://geocode.googleapis.com/v4/geocode/address/${encodeURIComponent(
+          location.label
+        )}`;
+        const resp = await fetch(geocodeUrl, {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': mapsApiKey,
+            'X-Goog-FieldMask': 'results.placeId,results.location,results.formattedAddress',
+            'X-Goog-Maps-Solution-ID': 'gmp_mcp_codeassist_v1_aistudio',
+          },
+          signal: AbortSignal.timeout(5000),
+        });
+        if (resp.status === 429) {
+          return { coords: null, quotaExceeded: true };
+        }
+        const json = (await resp.json()) as {
+          results?: Array<{ location?: { latitude?: number; longitude?: number } }>;
+          error?: { status?: string };
+        };
+        if (json?.error?.status === 'RESOURCE_EXHAUSTED') {
+          return { coords: null, quotaExceeded: true };
+        }
+        const first = json?.results?.[0]?.location;
+        if (
+          typeof first?.latitude === 'number' &&
+          typeof first?.longitude === 'number'
+        ) {
+          return {
+            coords: { lat: first.latitude, lon: first.longitude },
+            quotaExceeded: false,
+          };
+        }
+      } catch {
+        // Fall through to Nominatim city geocode fallback
+      }
+    }
+
+    try {
+      const nomUrl = new URL('https://nominatim.openstreetmap.org/search');
+      nomUrl.searchParams.set('q', location.label);
+      nomUrl.searchParams.set('format', 'jsonv2');
+      nomUrl.searchParams.set('limit', '1');
+      const resp = await fetch(nomUrl.toString(), {
+        headers: {
+          'User-Agent': 'OneDoorSupportPlatform/1.0 (https://onedoor.support)',
+          Accept: 'application/json',
+        },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (resp.ok) {
+        const items = (await resp.json()) as NominatimResultItem[];
+        const lat = Number(items?.[0]?.lat);
+        const lon = Number(items?.[0]?.lon);
+        if (Number.isFinite(lat) && Number.isFinite(lon)) {
+          return { coords: { lat, lon }, quotaExceeded: false };
+        }
+      }
+    } catch {
+      // Ignore fallback failure
+    }
+
+    return { coords: null, quotaExceeded: false };
+  }
+
+  // Privacy-gated Nearby Support Centers search (temporary alternative to hospital integration)
+  // Strictly requires explicit user confirmation of location; never logs survivor queries or coordinates.
+  app.post('/api/centers/nearby', async (req, res) => {
+    const body = req.body as {
+      location?: unknown;
+      locationConfirmed?: unknown;
+      categories?: unknown;
+      radiusKm?: unknown;
+      lang?: unknown;
+    };
+
+    const location = sanitizeUserLocation(body?.location);
+    if (body?.locationConfirmed !== true || !location) {
+      res.status(400).json({
+        error: 'Please confirm your location before searching for nearby support centers.',
+      });
+      return;
+    }
+
+    const validCategories = Array.isArray(body?.categories)
+      ? body.categories.filter((c): c is SupportCategoryId =>
+          SUPPORT_CATEGORY_IDS.includes(c as SupportCategoryId)
+        )
+      : [];
+
+    const rawRadius = Number(body?.radiusKm);
+    const radiusKm = rawRadius === 50 ? 50 : rawRadius === 25 ? 25 : 10;
+    const radiusMeters = radiusKm * 1000;
+    const langCode = typeof body?.lang === 'string' && body.lang.trim() ? body.lang.trim() : 'en';
+    const regionCode =
+      location.countryCode && location.countryCode.length === 2
+        ? location.countryCode.toLowerCase()
+        : undefined;
+
+    const mapsApiKey = getMapsApiKey();
+    const { coords: originCoordinates, quotaExceeded: geocodeQuota } =
+      await resolveOriginCoordinates(location, mapsApiKey);
+
+    if (geocodeQuota) {
+      res.status(429).json({
+        error: 'Google Maps Platform quota reached. Please check API quota settings.',
+        quotaExceeded: true,
+      });
+      return;
+    }
+
+    // 1. Check any verified OneDoor partner directory entries first
+    const verifiedMatches = rankHelpingCenters(
+      {
+        modelVersion: 'nearby-lookup',
+        predictions: [],
+        predictedCategories: validCategories,
+        urgencyFlagged: false,
+        urgencyProbability: 0,
+        urgencyUncertainty: 'clear',
+        overallConfidence: 'moderate_or_higher',
+        lowConfidenceFallbackUsed: false,
+        uncertaintyMessage: '',
+        inputWordCount: 0,
+        nonEnglishWarning: false,
+      },
+      { location, overrideCategories: validCategories }
+    );
+
+    const candidates: NearbyPlaceCandidate[] = verifiedMatches.matches.map((m) => ({
+      id: `partner-${m.center.id}`,
+      name: m.center.name,
+      serviceTypeLabel: m.center.pathwayType,
+      address: [m.center.city, m.center.region, m.center.countryName]
+        .filter(Boolean)
+        .join(', '),
+      phone: m.center.contactNote,
+      websiteUri: null,
+      openNowVerified: m.center.hours24x7 ? true : null,
+      businessStatus: 'OPERATIONAL',
+      isVerifiedPartner: true,
+      partnerCategories: m.center.categories,
+    }));
+
+    if (!mapsApiKey) {
+      const centers = scoreAndRankNearbyPlaces(
+        candidates,
+        validCategories,
+        originCoordinates
+      );
+      const payload: NearbySearchResponse = {
+        centers,
+        radiusKm,
+        confirmedLocationLabel: location.label,
+        originCoordinates,
+        mapsApiConfigured: false,
+        hasVerifiedPartnerMatches: verifiedMatches.matches.length > 0,
+        noResultsReason:
+          centers.length === 0 ? 'maps_not_configured' : undefined,
+      };
+      res.json(payload);
+      return;
+    }
+
+    // 2. Query Places API (New) using only generic support categories + confirmed area
+    const searchPlans = buildCategorySearchPlans(validCategories).slice(0, 3);
+    let quotaHit = false;
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': mapsApiKey,
+      'X-Goog-FieldMask': PLACES_FIELD_MASK,
+      'X-Goog-Maps-Solution-ID': 'gmp_mcp_codeassist_v1_aistudio',
+    };
+
+    const requests: Array<Promise<Response>> = searchPlans.map((plan) => {
+      const bodyPayload: Record<string, unknown> = {
+        textQuery: `${plan.query} in ${location.label}`,
+        pageSize: 8,
+        languageCode: langCode,
+      };
+      if (regionCode) {
+        bodyPayload.regionCode = regionCode;
+      }
+      if (originCoordinates) {
+        bodyPayload.locationBias = {
+          circle: {
+            center: {
+              latitude: originCoordinates.lat,
+              longitude: originCoordinates.lon,
+            },
+            radius: radiusMeters,
+          },
+        };
+      }
+      return fetch('https://places.googleapis.com/v1/places:searchText', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(bodyPayload),
+        signal: AbortSignal.timeout(7000),
+      });
+    });
+
+    if (originCoordinates) {
+      const nearbyTypes = Array.from(
+        new Set(
+          searchPlans
+            .flatMap((p) => p.includedTypes)
+            .filter((t) => t !== 'doctor')
+        )
+      ).slice(0, 5);
+      if (nearbyTypes.length > 0) {
+        const nearbyPayload: Record<string, unknown> = {
+          includedTypes: nearbyTypes,
+          maxResultCount: 10,
+          rankPreference: 'POPULARITY',
+          languageCode: langCode,
+          locationRestriction: {
+            circle: {
+              center: {
+                latitude: originCoordinates.lat,
+                longitude: originCoordinates.lon,
+              },
+              radius: Math.min(50000, Math.max(1000, radiusMeters)),
+            },
+          },
+        };
+        if (regionCode) {
+          nearbyPayload.regionCode = regionCode;
+        }
+        requests.push(
+          fetch('https://places.googleapis.com/v1/places:searchNearby', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(nearbyPayload),
+            signal: AbortSignal.timeout(7000),
+          })
+        );
+      }
+    }
+
+    const settled = await Promise.allSettled(requests);
+    for (const item of settled) {
+      if (item.status !== 'fulfilled') continue;
+      const resp = item.value;
+      if (resp.status === 429) {
+        quotaHit = true;
+        continue;
+      }
+      try {
+        const json = (await resp.json()) as {
+          places?: GooglePlaceRaw[];
+          error?: { status?: string };
+        };
+        if (json?.error?.status === 'RESOURCE_EXHAUSTED') {
+          quotaHit = true;
+          continue;
+        }
+        if (Array.isArray(json?.places)) {
+          for (const rawPlace of json.places) {
+            const candidate = mapGooglePlaceToCandidate(rawPlace);
+            if (candidate) {
+              candidates.push(candidate);
+            }
+          }
+        }
+      } catch {
+        // Ignore single malformed upstream response
+      }
+    }
+
+    if (quotaHit && candidates.length === verifiedMatches.matches.length) {
+      res.status(429).json({
+        error: 'Google Maps Platform quota reached. Please check your Maps API quota.',
+        quotaExceeded: true,
+      });
+      return;
+    }
+
+    const ranked = scoreAndRankNearbyPlaces(
+      candidates,
+      validCategories,
+      originCoordinates
+    ).filter((c) => c.distanceKm === null || c.distanceKm <= radiusKm * 1.35);
+
+    const balancedCenters = selectTopBalancedCenters(ranked, validCategories, 12);
+
+    const payload: NearbySearchResponse = {
+      centers: balancedCenters,
+      radiusKm,
+      confirmedLocationLabel: location.label,
+      originCoordinates,
+      mapsApiConfigured: true,
+      hasVerifiedPartnerMatches: verifiedMatches.matches.length > 0,
+      noResultsReason:
+        balancedCenters.length === 0 ? 'no_results_in_radius' : undefined,
+    };
+    res.json(payload);
   });
 
   // International forward geocoding autocomplete proxy (sanitized city/region/country/postal only)

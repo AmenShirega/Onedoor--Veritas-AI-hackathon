@@ -44,6 +44,8 @@ export interface UserLocation {
   country: string;
   countryCode: string;
   postalCode: string;
+  lat?: number;
+  lon?: number;
   source: 'manual' | 'geolocation_confirmed';
 }
 
@@ -55,6 +57,8 @@ export interface GeocodedPlace {
   country: string;
   countryCode: string;
   postalCode: string;
+  lat?: number;
+  lon?: number;
 }
 
 export interface ModelWeightsFile {
@@ -144,6 +148,41 @@ export interface MatchingResult {
     | 'no_verified_services_for_location'
     | 'no_verified_services_configured'
     | 'location_not_shared';
+}
+
+export type NearbyVerificationTier =
+  | 'verified_partner'
+  | 'google_maps_directory'
+  | 'incomplete_listing';
+
+export interface NearbySupportCenter {
+  id: string;
+  name: string;
+  serviceTypeLabel: string;
+  matchedCategories: SupportCategoryId[];
+  relevanceScore: number;
+  address: string;
+  distanceKm: number | null;
+  lat?: number;
+  lon?: number;
+  phone: string | null;
+  websiteUri: string | null;
+  directionsUri: string;
+  googleMapsUri?: string;
+  verificationTier: NearbyVerificationTier;
+  openNowVerified: boolean | null;
+  businessStatus?: string;
+  sourceName: 'OneDoor Verified Partner' | 'Google Maps Directory';
+}
+
+export interface NearbySearchResponse {
+  centers: NearbySupportCenter[];
+  radiusKm: number;
+  confirmedLocationLabel: string;
+  originCoordinates: { lat: number; lon: number } | null;
+  mapsApiConfigured: boolean;
+  hasVerifiedPartnerMatches: boolean;
+  noResultsReason?: string;
 }
 
 export type ReferralStatus = 'Saved locally (not transmitted)' | 'Withdrawn';

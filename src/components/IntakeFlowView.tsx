@@ -10,6 +10,7 @@ import {
   Download,
   Info,
   Loader2,
+  MapPin,
   PhoneCall,
   RotateCcw,
   Search,
@@ -19,8 +20,14 @@ import {
   User,
 } from 'lucide-react';
 import { LocationSelector } from './LocationSelector';
+import { NearbyCentersList } from './NearbyCentersList';
 import { CategoryOutlinedIcon, DoorwayLogoMark } from './OneDoorIcons';
-import { CALL_TRANSLATIONS, FLOW_TRANSLATIONS, TRANSLATIONS } from '../lib/i18n';
+import {
+  CALL_TRANSLATIONS,
+  FLOW_TRANSLATIONS,
+  NEARBY_TRANSLATIONS,
+  TRANSLATIONS,
+} from '../lib/i18n';
 import { rankHelpingCenters } from '../lib/matching';
 import { buildConsentedReferralPayload } from '../lib/referralBuilder';
 import {
@@ -29,6 +36,8 @@ import {
   type LanguageCode,
   type MatchedCenter,
   type MatchingResult,
+  type NearbySearchResponse,
+  type NearbySupportCenter,
   type ReferralRecord,
   type SupportCategoryId,
   type UserLocation,
@@ -64,6 +73,7 @@ export function IntakeFlowView({
   const t = TRANSLATIONS[lang];
   const f = FLOW_TRANSLATIONS[lang];
   const c = CALL_TRANSLATIONS[lang];
+  const n = NEARBY_TRANSLATIONS[lang];
 
   const [step, setStep] = useState<FlowStep>(1);
   const [composerText, setComposerText] = useState('');
@@ -115,6 +125,15 @@ export function IntakeFlowView({
   const [lookupError, setLookupError] = useState<string | null>(null);
   const [lookupRecord, setLookupRecord] = useState<ReferralRecord | null>(null);
 
+  // Nearby Support Centers state (strictly gated on explicit location confirmation)
+  const [inlineLocationOpen, setInlineLocationOpen] = useState(false);
+  const [nearbyRadiusKm, setNearbyRadiusKm] = useState<10 | 25 | 50>(10);
+  const [nearbyLoading, setNearbyLoading] = useState(false);
+  const [nearbyError, setNearbyError] = useState<string | null>(null);
+  const [nearbyResult, setNearbyResult] = useState<NearbySearchResponse | null>(null);
+  const [selectedNearbyCenter, setSelectedNearbyCenter] =
+    useState<NearbySupportCenter | null>(null);
+
   const threadContainerRef = useRef<HTMLDivElement | null>(null);
   const consumedPrefillRef = useRef<string | null>(null);
 
@@ -138,9 +157,72 @@ export function IntakeFlowView({
     }
   };
 
+  const fetchNearbyCenters = async (
+    confirmedLoc: UserLocation,
+    categories: SupportCategoryId[],
+    radiusKm: 10 | 25 | 50
+  ) => {
+    setNearbyLoading(true);
+    setNearbyError(null);
+    try {
+      const resp = await fetch('/api/centers/nearby', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location: confirmedLoc,
+          locationConfirmed: true,
+          categories,
+          radiusKm,
+          lang,
+        }),
+      });
+      const data = (await resp.json()) as NearbySearchResponse & {
+        error?: string;
+        quotaExceeded?: boolean;
+      };
+      if (resp.status === 429 || data.quotaExceeded) {
+        window.dispatchEvent(new CustomEvent('gmp-quota-exceeded'));
+        setNearbyError(data.error || n.searchErrorBody);
+        return;
+      }
+      if (!resp.ok) {
+        setNearbyError(data.error || n.searchErrorBody);
+        return;
+      }
+      setNearbyResult(data);
+    } catch {
+      setNearbyError(n.searchErrorBody);
+    } finally {
+      setNearbyLoading(false);
+    }
+  };
+
   const handleLocationChange = (next: UserLocation | null) => {
     setLocation(next);
     setIncludeLocation(Boolean(next));
+    setSelectedNearbyCenter(null);
+    if (!next) {
+      setNearbyResult(null);
+      setNearbyError(null);
+      return;
+    }
+    setInlineLocationOpen(false);
+    const activeCats =
+      approvedCategories.length > 0 ? approvedCategories : suggestedCategories;
+    void fetchNearbyCenters(next, activeCats, nearbyRadiusKm);
+  };
+
+  const handleBroadenRadius = (nextRadius: 10 | 25 | 50) => {
+    setNearbyRadiusKm(nextRadius);
+    if (!location) return;
+    const activeCats =
+      approvedCategories.length > 0 ? approvedCategories : suggestedCategories;
+    void fetchNearbyCenters(location, activeCats, nextRadius);
+  };
+
+  const handleSelectNearbyCenter = (center: NearbySupportCenter) => {
+    setSelectedNearbyCenter(center);
+    setSelectedCenterId(center.id);
   };
 
   // Build plain localized summary cleanly without technical jargon
@@ -424,9 +506,14 @@ export function IntakeFlowView({
     setReferralError(null);
     setWithdrawnNotice(null);
 
-    const targetCenterId = selectedMatch?.center.id ?? 'self-directed-summary';
+    const targetCenterId =
+      selectedNearbyCenter?.id ??
+      selectedMatch?.center.id ??
+      'self-directed-summary';
     const targetCenterName =
-      selectedMatch?.center.name ?? t.intake.selfDirectedLabel;
+      selectedNearbyCenter?.name ??
+      selectedMatch?.center.name ??
+      t.intake.selfDirectedLabel;
 
     const built = buildConsentedReferralPayload({
       consentApproved,
@@ -439,7 +526,12 @@ export function IntakeFlowView({
       minorSafeguardingNoted: minorInvolved,
       targetCenterId,
       targetCenterName,
-      matchingExplanation: selectedMatch?.matchReasons ?? [],
+      matchingExplanation: selectedNearbyCenter
+        ? [
+            `${selectedNearbyCenter.serviceTypeLabel} (${selectedNearbyCenter.sourceName})`,
+            selectedNearbyCenter.address,
+          ].filter(Boolean)
+        : selectedMatch?.matchReasons ?? [],
     });
 
     if (!built.ok) {
@@ -896,7 +988,23 @@ export function IntakeFlowView({
                 )}
               </div>
 
-              <div className="pt-2 flex justify-end">
+              <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
+                <button
+                  type="button"
+                  data-testid="toggle-inline-location-btn"
+                  onClick={() => setInlineLocationOpen((prev) => !prev)}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#0F3D3E]/25 bg-[#FAF6EF] text-xs sm:text-sm font-semibold text-[#0F3D3E] hover:bg-[#DCE8E3]/60 min-h-[44px]"
+                >
+                  <MapPin className="w-4 h-4 text-[#B45309]" aria-hidden="true" />
+                  <span>
+                    {inlineLocationOpen
+                      ? n.hideLocationBtn
+                      : location
+                        ? n.changeLocationBtn
+                        : n.confirmLocationBtn}
+                  </span>
+                </button>
+
                 <button
                   type="button"
                   data-testid="step1-continue-button"
@@ -908,6 +1016,72 @@ export function IntakeFlowView({
                   <ArrowRight className="w-4 h-4 rtl:rotate-180" aria-hidden="true" />
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* Direct In-Conversation Nearby Support Centers Discovery (Privacy-Gated) */}
+          {(hasAnyReceivedMessage || approvedCategories.length > 0) && (
+            <div
+              data-testid="conversation-nearby-section"
+              className="rounded-2xl bg-white border border-[#0F3D3E]/15 p-5 sm:p-6 space-y-4"
+            >
+              {!location && !inlineLocationOpen && (
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="space-y-1 max-w-xl">
+                    <h2 className="font-display text-base sm:text-lg font-bold text-[#0F3D3E]">
+                      {n.promptCardTitle}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-[#14202B]/80 leading-relaxed">
+                      {n.promptCardBody}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    data-testid="conv-confirm-location-cta"
+                    onClick={() => setInlineLocationOpen(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0F3D3E] text-[#FAF6EF] text-xs sm:text-sm font-semibold hover:bg-[#0A2C2D] min-h-[44px]"
+                  >
+                    <MapPin className="w-4 h-4" aria-hidden="true" />
+                    <span>{n.confirmLocationBtn}</span>
+                  </button>
+                </div>
+              )}
+
+              {inlineLocationOpen && (
+                <div data-testid="inline-location-selector-wrap">
+                  <LocationSelector
+                    lang={lang}
+                    location={location}
+                    onChangeLocation={handleLocationChange}
+                  />
+                </div>
+              )}
+
+              {location && (
+                <NearbyCentersList
+                  lang={lang}
+                  loading={nearbyLoading}
+                  error={nearbyError}
+                  result={nearbyResult}
+                  radiusKm={nearbyRadiusKm}
+                  selectedCenterId={
+                    selectedNearbyCenter?.id ?? selectedMatch?.center.id ?? ''
+                  }
+                  compact
+                  onSelectCenter={handleSelectNearbyCenter}
+                  onBroadenRadius={handleBroadenRadius}
+                  onChangeLocation={() => setInlineLocationOpen(true)}
+                  onRefresh={() =>
+                    void fetchNearbyCenters(
+                      location,
+                      approvedCategories.length > 0
+                        ? approvedCategories
+                        : suggestedCategories,
+                      nearbyRadiusKm
+                    )
+                  }
+                />
+              )}
             </div>
           )}
         </section>
@@ -933,10 +1107,33 @@ export function IntakeFlowView({
             onChangeLocation={handleLocationChange}
           />
 
-          {/* Plain-language Local Service Status */}
-          <div className="space-y-3" data-testid="matching-status-section">
-            {matchingResult.verifiedServicesAvailable &&
-            matchingResult.matches.length > 0 ? (
+          {/* Plain-language Local Service Status & Real Nearby Directory */}
+          <div className="space-y-4" data-testid="matching-status-section">
+            {location ? (
+              <NearbyCentersList
+                lang={lang}
+                loading={nearbyLoading}
+                error={nearbyError}
+                result={nearbyResult}
+                radiusKm={nearbyRadiusKm}
+                selectedCenterId={
+                  selectedNearbyCenter?.id ?? selectedMatch?.center.id ?? ''
+                }
+                onSelectCenter={handleSelectNearbyCenter}
+                onBroadenRadius={handleBroadenRadius}
+                onChangeLocation={() => handleLocationChange(null)}
+                onRefresh={() =>
+                  void fetchNearbyCenters(
+                    location,
+                    approvedCategories.length > 0
+                      ? approvedCategories
+                      : suggestedCategories,
+                    nearbyRadiusKm
+                  )
+                }
+              />
+            ) : matchingResult.verifiedServicesAvailable &&
+              matchingResult.matches.length > 0 ? (
               <div className="space-y-3">
                 <h2 className="font-display text-lg font-bold text-[#0F3D3E]">
                   {f.localResultsTitle}
@@ -999,12 +1196,10 @@ export function IntakeFlowView({
                 <Info className="w-5 h-5 text-[#0F3D3E] shrink-0 mt-0.5" aria-hidden="true" />
                 <div className="space-y-1 text-sm">
                   <h2 className="font-display font-bold text-[#0F3D3E]">
-                    {location
-                      ? f.noVerifiedTitle.replace('{location}', location.label)
-                      : f.noLocationTitle}
+                    {f.noLocationTitle}
                   </h2>
                   <p className="text-[#14202B]/80 leading-relaxed">
-                    {location ? f.noVerifiedBody : f.noLocationBody}
+                    {f.noLocationBody}
                   </p>
                 </div>
               </div>
@@ -1057,7 +1252,16 @@ export function IntakeFlowView({
                   {f.sectionWhoReceives}
                 </h2>
                 <div className="rounded-xl bg-[#FAF6EF] border border-[#0F3D3E]/12 p-3.5 text-sm text-[#14202B]">
-                  {selectedMatch ? (
+                  {selectedNearbyCenter ? (
+                    <div className="space-y-1">
+                      <p className="font-semibold text-[#0F3D3E]">
+                        {selectedNearbyCenter.name}
+                      </p>
+                      <p className="text-xs text-[#14202B]/75">
+                        {selectedNearbyCenter.serviceTypeLabel} · {selectedNearbyCenter.address}
+                      </p>
+                    </div>
+                  ) : selectedMatch ? (
                     <p className="font-semibold text-[#0F3D3E]">
                       {selectedMatch.center.name}
                     </p>

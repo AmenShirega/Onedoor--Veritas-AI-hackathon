@@ -89,6 +89,8 @@ export function LocationSelector({
       country: place.country,
       countryCode: place.countryCode,
       postalCode: place.postalCode,
+      lat: place.lat,
+      lon: place.lon,
       source,
     };
     onChangeLocation(next);
