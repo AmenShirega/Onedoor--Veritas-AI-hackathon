@@ -1,15 +1,24 @@
 import 'dotenv/config';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import http from 'node:http';
 import path from 'node:path';
 import express from 'express';
-import { GoogleGenAI, ThinkingLevel } from '@google/genai';
+import { WebSocketServer, WebSocket } from 'ws';
+import {
+  GoogleGenAI,
+  Modality,
+  ThinkingLevel,
+  type LiveServerMessage,
+} from '@google/genai';
 import { classifyWithWeights } from './src/lib/mlInference';
 import { rankHelpingCenters } from './src/lib/matching';
 import { VERIFIED_SERVICE_DIRECTORY } from './src/lib/directory';
+import { LANGUAGE_MAP } from './src/lib/i18n/languages';
 import {
   SUPPORT_CATEGORY_IDS,
   type GeocodedPlace,
+  type LanguageCode,
   type ModelWeightsFile,
   type ReferralRecord,
   type SupportCategoryId,
@@ -603,6 +612,99 @@ async function startServer() {
     res.json({ deleted: true, referenceCode: code });
   });
 
+  // Live Gemini Voice Call readiness check (never leaks API key)
+  app.get('/api/live-call/status', (_req, res) => {
+    const apiKey = process.env.GEMINI_API_KEY;
+    const configured = Boolean(apiKey && apiKey !== 'MY_GEMINI_API_KEY');
+    res.json({
+      configured,
+      model: 'gemini-3.8-live',
+    });
+  });
+
+  // Post-call organization helper: keeps trained ML classifier as source of category truth,
+  // and optionally uses Gemini to organize brief reference notes without altering user words.
+  app.post('/api/live-call/organize', async (req, res) => {
+    const body = req.body as {
+      userTranscriptText?: unknown;
+      languageName?: unknown;
+    };
+
+    const userText =
+      typeof body?.userTranscriptText === 'string'
+        ? body.userTranscriptText.trim().slice(0, 4000)
+        : '';
+
+    if (userText.length < 3) {
+      res.status(400).json({
+        error: 'No spoken details were available to organize.',
+      });
+      return;
+    }
+
+    const classification = classifyWithWeights(userText, modelWeights);
+    const categoryNames = classification.predictedCategories.map(
+      (c) => CATEGORY_TITLES[c]
+    );
+    const fallbackNote = `Spoke about support needs that may relate to: ${
+      categoryNames.join(', ') || 'general confidential support'
+    }.${
+      classification.urgencyFlagged
+        ? ' Time-sensitive safety or medical care may be relevant.'
+        : ''
+    }`;
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
+      res.json({
+        aiOrganizedNote: fallbackNote,
+        usedGemini: false,
+        classification,
+      });
+      return;
+    }
+
+    try {
+      const ai = new GoogleGenAI({
+        apiKey,
+        httpOptions: {
+          headers: { 'User-Agent': 'aistudio-build' },
+        },
+      });
+      const languageName =
+        typeof body?.languageName === 'string' && body.languageName.trim()
+          ? body.languageName.trim().slice(0, 48)
+          : 'English';
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-4-hydrogen',
+        contents: [
+          `Organize the user's spoken call notes into 2 short, neutral, non-identifying sentences in ${languageName}.`,
+          'Rules:',
+          '- Describe only what the user shared, without inventing names, addresses, or diagnoses.',
+          '- Never give directives or medical/legal advice.',
+          `Spoken input: """${userText.slice(0, 1500)}"""`,
+        ].join('\n'),
+        config: {
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+        },
+      });
+
+      const note = (response.text ?? '').trim() || fallbackNote;
+      res.json({
+        aiOrganizedNote: note,
+        usedGemini: Boolean(response.text?.trim()),
+        classification,
+      });
+    } catch {
+      res.json({
+        aiOrganizedNote: fallbackNote,
+        usedGemini: false,
+        classification,
+      });
+    }
+  });
+
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
@@ -618,7 +720,228 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const httpServer = http.createServer(app);
+  const wss = new WebSocketServer({ noServer: true });
+
+  httpServer.on('upgrade', (request, socket, head) => {
+    try {
+      const reqUrl = new URL(request.url || '/', 'http://localhost');
+      if (reqUrl.pathname !== '/api/live-call') {
+        return;
+      }
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+      });
+    } catch {
+      socket.destroy();
+    }
+  });
+
+  wss.on('connection', async (clientWs, request) => {
+    const reqUrl = new URL(request.url || '/api/live-call', 'http://localhost');
+    const rawLang = (reqUrl.searchParams.get('lang') || 'en') as LanguageCode;
+    const langMeta = LANGUAGE_MAP.get(rawLang);
+    const languageName = langMeta?.englishName ?? 'English';
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
+      if (clientWs.readyState === WebSocket.OPEN) {
+        clientWs.send(
+          JSON.stringify({
+            type: 'error',
+            code: 'missing_api_key',
+            message:
+              'Real-time Gemini voice calling is not configured yet. Add GEMINI_API_KEY in Settings > Secrets.',
+          })
+        );
+        clientWs.close(4001, 'Missing GEMINI_API_KEY');
+      }
+      return;
+    }
+
+    const sendToClient = (payload: Record<string, unknown>) => {
+      if (clientWs.readyState === WebSocket.OPEN) {
+        clientWs.send(JSON.stringify(payload));
+      }
+    };
+
+    let liveSession: Awaited<ReturnType<GoogleGenAI['live']['connect']>> | null = null;
+    let isClosing = false;
+
+    const systemInstruction = [
+      'You are the OneDoor AI Voice Assistant speaking with someone affected by violence, abuse, or harassment.',
+      `Preferred conversation language: ${languageName}. Speak naturally in the language the caller uses.`,
+      'Tone and pacing:',
+      '- Be calm, warm, respectful, and concise—like a gentle phone conversation.',
+      '- Ask at most ONE simple follow-up question at a time so the caller never feels overwhelmed.',
+      '- Let the caller share only what feels safe. Never pressure them for names, exact street addresses, or graphic details.',
+      'Strict safety boundaries:',
+      '- You are an AI assistant, NOT a human counselor, doctor, lawyer, or emergency responder. Acknowledge this honestly if asked.',
+      '- Never diagnose medical or psychological conditions.',
+      '- Never make decisions for the caller or tell them to leave, stay, report, or confront anyone.',
+      '- Never promise safety or guarantees beyond what the platform provides, and never invent organizations or phone numbers.',
+      'Goal of the call:',
+      '- Listen to what happened or what support they want (medical care, emotional support, safe shelter/protection, legal guidance, sexual-violence care, or practical social help).',
+      '- If they seem in immediate danger or mention urgent injury, gently remind them to contact local emergency help or someone trusted nearby.',
+      '- When they have shared enough, briefly reflect back the support areas you heard and invite them to end the call whenever ready to review their summary and location options.',
+    ].join('\n');
+
+    try {
+      const ai = new GoogleGenAI({
+        apiKey,
+        apiVersion: 'v1beta',
+        httpOptions: {
+          apiVersion: 'v1beta',
+          headers: { 'User-Agent': 'aistudio-build' },
+        },
+      });
+
+      liveSession = await ai.live.connect({
+        model: 'gemini-3.8-live',
+        config: {
+          responseModalities: [Modality.AUDIO],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName: 'Kore' },
+            },
+          },
+          inputAudioTranscription: {},
+          outputAudioTranscription: {},
+          systemInstruction,
+        },
+        callbacks: {
+          onopen: () => {
+            sendToClient({ type: 'ready' });
+          },
+          onmessage: (message: LiveServerMessage) => {
+            const content = message.serverContent;
+            if (!content) return;
+
+            if (content.inputTranscription?.text) {
+              sendToClient({
+                type: 'input_transcript',
+                text: content.inputTranscription.text,
+              });
+            }
+
+            if (content.outputTranscription?.text) {
+              sendToClient({
+                type: 'output_transcript',
+                text: content.outputTranscription.text,
+              });
+            }
+
+            for (const part of content.modelTurn?.parts ?? []) {
+              if (part.inlineData?.data) {
+                sendToClient({
+                  type: 'audio',
+                  data: part.inlineData.data,
+                });
+              }
+            }
+
+            if (content.interrupted) {
+              sendToClient({ type: 'interrupted' });
+            }
+
+            if (content.turnComplete) {
+              sendToClient({ type: 'turn_complete' });
+            }
+          },
+          onerror: (errEvent) => {
+            const detail =
+              (errEvent as { message?: string; error?: { message?: string } })?.message ||
+              (errEvent as { error?: { message?: string } })?.error?.message ||
+              '';
+            if (detail) {
+              console.error('[OneDoor Live] Gemini session error:', detail.slice(0, 160));
+            }
+            const isAuth = /API_KEY|PERMISSION_DENIED|401|403|unauthorized/i.test(detail);
+            sendToClient({
+              type: 'error',
+              code: isAuth ? 'invalid_api_key' : 'gemini_live_error',
+              message: isAuth
+                ? 'Gemini API credentials appear invalid or missing. Check GEMINI_API_KEY in Settings > Secrets.'
+                : detail
+                  ? `Voice assistant connection encountered an error (${detail.slice(0, 120)}).`
+                  : 'Voice assistant connection encountered an error.',
+            });
+          },
+          onclose: (closeEvent) => {
+            const reason = (closeEvent as { reason?: string })?.reason || '';
+            const code = (closeEvent as { code?: number })?.code;
+            if (!isClosing && reason) {
+              console.error('[OneDoor Live] Gemini session closed:', code, reason.slice(0, 160));
+            }
+            if (!isClosing) {
+              sendToClient({
+                type: 'session_closed',
+                reason: reason ? reason.slice(0, 160) : undefined,
+              });
+              if (clientWs.readyState === WebSocket.OPEN) {
+                clientWs.close(1000, 'Live session closed');
+              }
+            }
+          },
+        },
+      });
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : 'Unable to connect to Gemini Live.';
+      const isAuthErr = /API_KEY|PERMISSION_DENIED|401|403/i.test(errMsg);
+      sendToClient({
+        type: 'error',
+        code: isAuthErr ? 'invalid_api_key' : 'connect_failed',
+        message: isAuthErr
+          ? 'Gemini API credentials appear invalid or missing. Check GEMINI_API_KEY in Settings > Secrets.'
+          : 'Could not open real-time voice call connection.',
+      });
+      if (clientWs.readyState === WebSocket.OPEN) {
+        clientWs.close(1011, 'Connect failed');
+      }
+      return;
+    }
+
+    clientWs.on('message', (raw) => {
+      if (!liveSession) return;
+      try {
+        const msg = JSON.parse(raw.toString()) as { type?: string; data?: string };
+        if (msg.type === 'audio' && typeof msg.data === 'string' && msg.data.length > 0) {
+          liveSession.sendRealtimeInput({
+            audio: {
+              data: msg.data,
+              mimeType: 'audio/pcm;rate=16000',
+            },
+          });
+        } else if (msg.type === 'end_call') {
+          isClosing = true;
+          try {
+            liveSession.close();
+          } catch {
+            // Ignore close cleanup errors
+          }
+          if (clientWs.readyState === WebSocket.OPEN) {
+            clientWs.close(1000, 'Ended by caller');
+          }
+        }
+      } catch {
+        // Ignore malformed client frames
+      }
+    });
+
+    clientWs.on('close', () => {
+      isClosing = true;
+      if (liveSession) {
+        try {
+          liveSession.close();
+        } catch {
+          // Ignore close cleanup errors
+        }
+        liveSession = null;
+      }
+    });
+  });
+
+  httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`OneDoor server running on http://0.0.0.0:${PORT}`);
   });
 }

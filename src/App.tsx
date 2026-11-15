@@ -3,6 +3,7 @@ import { AboutView } from './components/AboutView';
 import { HomeView } from './components/HomeView';
 import { IntakeFlowView } from './components/IntakeFlowView';
 import { Shell, type AppRoute } from './components/Shell';
+import { VoiceCallView } from './components/VoiceCallView';
 import { getLanguageMeta, getStoredLanguage, saveLanguage } from './lib/i18n';
 import type { LanguageCode } from './lib/types';
 
@@ -11,13 +12,14 @@ function routeFromLocation(): AppRoute {
   if (params.get('autostart') === '1') return 'intake';
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
   if (path === '/intake') return 'intake';
+  if (path === '/call') return 'call';
   if (path === '/about') return 'about';
   return 'home';
 }
 
 export default function App() {
   const [route, setRoute] = useState<AppRoute>(() => routeFromLocation());
-  const [intakeMode, setIntakeMode] = useState<'write' | 'talk'>('write');
+  const [callPrefillText, setCallPrefillText] = useState<string | undefined>(undefined);
   const [lang, setLang] = useState<LanguageCode>(() => getStoredLanguage());
 
   useEffect(() => {
@@ -43,9 +45,12 @@ export default function App() {
     }
   };
 
-  const handleStartIntake = (mode: 'write' | 'talk') => {
-    setIntakeMode(mode);
-    navigate('intake');
+  const handleStartIntake = (mode: 'write' | 'call') => {
+    if (mode === 'call') {
+      navigate('call');
+    } else {
+      navigate('intake');
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -58,10 +63,32 @@ export default function App() {
           onNavigate={navigate}
         />
       )}
+      {route === 'call' && (
+        <VoiceCallView
+          lang={lang}
+          onSwitchToText={(prefill) => {
+            if (prefill && prefill.trim().length >= 3) {
+              setCallPrefillText(prefill.trim());
+            }
+            navigate('intake');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onCompleteToWorkflow={(spokenText) => {
+            setCallPrefillText(spokenText);
+            navigate('intake');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
+      )}
       {route === 'intake' && (
         <IntakeFlowView
           lang={lang}
-          initialMode={intakeMode}
+          initialSpokenText={callPrefillText}
+          onConsumeInitialSpokenText={() => setCallPrefillText(undefined)}
+          onOpenVoiceCall={() => {
+            navigate('call');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
         />
       )}
       {route === 'about' && <AboutView lang={lang} />}

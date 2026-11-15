@@ -10,7 +10,7 @@ import {
   Download,
   Info,
   Loader2,
-  Mic,
+  PhoneCall,
   RotateCcw,
   Search,
   Send,
@@ -20,8 +20,7 @@ import {
 } from 'lucide-react';
 import { LocationSelector } from './LocationSelector';
 import { CategoryOutlinedIcon, DoorwayLogoMark } from './OneDoorIcons';
-import { VoiceAssistantPanel } from './VoiceAssistantPanel';
-import { FLOW_TRANSLATIONS, TRANSLATIONS } from '../lib/i18n';
+import { CALL_TRANSLATIONS, FLOW_TRANSLATIONS, TRANSLATIONS } from '../lib/i18n';
 import { rankHelpingCenters } from '../lib/matching';
 import { buildConsentedReferralPayload } from '../lib/referralBuilder';
 import {
@@ -37,7 +36,9 @@ import {
 
 interface IntakeFlowViewProps {
   lang: LanguageCode;
-  initialMode?: 'write' | 'talk';
+  initialSpokenText?: string;
+  onConsumeInitialSpokenText?: () => void;
+  onOpenVoiceCall: () => void;
 }
 
 type FlowStep = 1 | 2 | 3;
@@ -54,14 +55,18 @@ interface ConversationMessage {
   isWelcome?: boolean;
 }
 
-export function IntakeFlowView({ lang, initialMode = 'write' }: IntakeFlowViewProps) {
+export function IntakeFlowView({
+  lang,
+  initialSpokenText,
+  onConsumeInitialSpokenText,
+  onOpenVoiceCall,
+}: IntakeFlowViewProps) {
   const t = TRANSLATIONS[lang];
   const f = FLOW_TRANSLATIONS[lang];
+  const c = CALL_TRANSLATIONS[lang];
 
   const [step, setStep] = useState<FlowStep>(1);
-  const [voiceOpen, setVoiceOpen] = useState(initialMode === 'talk');
   const [composerText, setComposerText] = useState('');
-  const [voiceDraft, setVoiceDraft] = useState('');
 
   const [messages, setMessages] = useState<ConversationMessage[]>([
     {
@@ -111,6 +116,20 @@ export function IntakeFlowView({ lang, initialMode = 'write' }: IntakeFlowViewPr
   const [lookupRecord, setLookupRecord] = useState<ReferralRecord | null>(null);
 
   const threadContainerRef = useRef<HTMLDivElement | null>(null);
+  const consumedPrefillRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const trimmed = initialSpokenText?.trim() ?? '';
+    if (trimmed.length < 3) {
+      consumedPrefillRef.current = null;
+      return;
+    }
+    if (consumedPrefillRef.current === trimmed) return;
+    consumedPrefillRef.current = trimmed;
+    onConsumeInitialSpokenText?.();
+    void sendMessageText(trimmed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSpokenText]);
 
   const scrollToThreadBottom = () => {
     const el = threadContainerRef.current;
@@ -208,7 +227,7 @@ export function IntakeFlowView({ lang, initialMode = 'write' }: IntakeFlowViewPr
 
   const sendMessageText = async (
     rawText: string,
-    options?: { retryMessageId?: string; fromVoice?: boolean }
+    options?: { retryMessageId?: string }
   ) => {
     const clean = rawText.trim();
     if (clean.length < 3) {
@@ -251,12 +270,7 @@ export function IntakeFlowView({ lang, initialMode = 'write' }: IntakeFlowViewPr
           status: 'sending',
         },
       ]);
-      if (options?.fromVoice) {
-        setVoiceDraft('');
-        setVoiceOpen(false);
-      } else {
-        setComposerText('');
-      }
+      setComposerText('');
     }
 
     setIsSending(true);
@@ -716,20 +730,8 @@ export function IntakeFlowView({ lang, initialMode = 'write' }: IntakeFlowViewPr
 
             </div>
 
-            {/* Composer & Optional Voice Input */}
+            {/* Composer & Link to Real-Time Voice Call */}
             <div className="border-t border-[#0F3D3E]/12 p-4 sm:p-5 bg-white space-y-3.5">
-              {voiceOpen && (
-                <VoiceAssistantPanel
-                  lang={lang}
-                  transcript={voiceDraft}
-                  onChangeTranscript={setVoiceDraft}
-                  onUseTranscript={(spokenText) =>
-                    sendMessageText(spokenText, { fromVoice: true })
-                  }
-                  disabled={isSending}
-                />
-              )}
-
               <div className="space-y-2">
                 <label
                   htmlFor="situation-description"
@@ -770,12 +772,12 @@ export function IntakeFlowView({ lang, initialMode = 'write' }: IntakeFlowViewPr
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <button
                   type="button"
-                  data-testid="toggle-voice-button"
-                  onClick={() => setVoiceOpen((prev) => !prev)}
+                  data-testid="open-voice-call-button"
+                  onClick={onOpenVoiceCall}
                   className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-[#0F3D3E]/25 bg-[#FAF6EF] text-xs sm:text-sm font-semibold text-[#0F3D3E] hover:bg-[#DCE8E3]/60 min-h-[44px]"
                 >
-                  <Mic className="w-4 h-4" aria-hidden="true" />
-                  <span>{voiceOpen ? f.voiceButtonClose : f.voiceButtonOpen}</span>
+                  <PhoneCall className="w-4 h-4 text-[#B45309]" aria-hidden="true" />
+                  <span>{c.accessCallingCta}</span>
                 </button>
 
                 <button

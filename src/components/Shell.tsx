@@ -4,7 +4,7 @@ import { DoorwayLogoMark } from './OneDoorIcons';
 import { TRANSLATIONS } from '../lib/i18n';
 import type { LanguageCode } from '../lib/types';
 
-export type AppRoute = 'home' | 'intake' | 'about';
+export type AppRoute = 'home' | 'intake' | 'call' | 'about';
 
 interface ShellProps {
   route: AppRoute;

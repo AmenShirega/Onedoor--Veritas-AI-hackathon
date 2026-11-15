@@ -2,8 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+  base64ToFloat3224k,
+  downsampleFloat32ToInt16Pcm,
+  int16ToBase64,
+  mergeTranscriptChunk,
+} from './audioPcm';
 import { VERIFIED_SERVICE_DIRECTORY } from './directory';
-import { FLOW_TRANSLATIONS, LANGUAGES, TRANSLATIONS } from './i18n';
+import { CALL_TRANSLATIONS, FLOW_TRANSLATIONS, LANGUAGES, TRANSLATIONS } from './i18n';
 import { classifyWithWeights, detectNonEnglishScript } from './mlInference';
 import { rankHelpingCenters } from './matching';
 import { buildConsentedReferralPayload } from './referralBuilder';
@@ -203,4 +209,51 @@ test('Consent-gated referral builder blocks unapproved submissions and supports 
     assert.equal(allowed.payload.approvedLocation, 'Toronto, Canada');
     assert.equal(allowed.payload.urgencyFlagged, false);
   }
+});
+
+test('CALL_TRANSLATIONS covers all 20 languages and keeps English hero CTA exact', () => {
+  assert.equal(CALL_TRANSLATIONS.en.accessCallingCta, 'Access Calling');
+  for (const lang of LANGUAGES) {
+    const callPack = CALL_TRANSLATIONS[lang.code];
+    assert.ok(callPack, `Missing call translation pack for ${lang.code}`);
+    assert.ok(callPack.accessCallingCta.trim().length > 2);
+    assert.ok(callPack.startCallBtn.trim().length > 2);
+    assert.ok(callPack.switchToTextBtn.trim().length > 2);
+    assert.ok(callPack.aiNoticeTitle.trim().length > 5);
+    assert.ok(callPack.errMissingKey.trim().length > 10);
+    assert.ok(callPack.clearCallDataBtn.trim().length > 3);
+  }
+});
+
+test('audioPcm helpers downsample 48kHz -> 16kHz PCM, round-trip base64, and merge transcript chunks cleanly', () => {
+  const input48k = new Float32Array(480);
+  for (let i = 0; i < input48k.length; i++) {
+    input48k[i] = i % 2 === 0 ? 0.5 : -0.25;
+  }
+  // Test extreme clamping
+  input48k[0] = 2.5;
+  input48k[1] = -2.5;
+
+  const pcm16k = downsampleFloat32ToInt16Pcm(input48k, 48000, 16000);
+  assert.equal(pcm16k.length, 160);
+  assert.ok(pcm16k[0] <= 32767 && pcm16k[0] >= -32768);
+
+  const exactClamp = downsampleFloat32ToInt16Pcm(
+    new Float32Array([1.5, -1.5, 0]),
+    16000,
+    16000
+  );
+  assert.deepEqual(Array.from(exactClamp), [32767, -32768, 0]);
+
+  const roundTripped = base64ToFloat3224k(int16ToBase64(exactClamp));
+  assert.equal(roundTripped.length, 3);
+  assert.ok(roundTripped[0] > 0.99);
+  assert.equal(roundTripped[1], -1);
+  assert.equal(roundTripped[2], 0);
+
+  let transcript = '';
+  transcript = mergeTranscriptChunk(transcript, 'I need');
+  transcript = mergeTranscriptChunk(transcript, 'safe shelter');
+  transcript = mergeTranscriptChunk(transcript, ', please.');
+  assert.equal(transcript, 'I need safe shelter, please.');
 });

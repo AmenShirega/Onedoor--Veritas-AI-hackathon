@@ -1,21 +1,22 @@
+import { PhoneCall } from 'lucide-react';
 import { GeneratedArtwork } from './GeneratedArtwork';
 import {
   CategoryOutlinedIcon,
   HeroDoorwayIllustration,
-  PhoneOutlinedIcon,
 } from './OneDoorIcons';
-import { TRANSLATIONS } from '../lib/i18n';
+import { CALL_TRANSLATIONS, TRANSLATIONS } from '../lib/i18n';
 import { SUPPORT_CATEGORY_IDS, type LanguageCode } from '../lib/types';
 import type { AppRoute } from './Shell';
 
 interface HomeViewProps {
   lang: LanguageCode;
-  onStartIntake: (mode: 'write' | 'talk') => void;
+  onStartIntake: (mode: 'write' | 'call') => void;
   onNavigate: (route: AppRoute) => void;
 }
 
 export function HomeView({ lang, onStartIntake, onNavigate }: HomeViewProps) {
   const t = TRANSLATIONS[lang];
+  const c = CALL_TRANSLATIONS[lang];
 
   return (
     <div>
@@ -53,11 +54,12 @@ export function HomeView({ lang, onStartIntake, onNavigate }: HomeViewProps) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => onStartIntake('talk')}
-                    className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-[#FAF6EF] text-[#0F3D3E] font-semibold text-sm sm:text-base hover:bg-[#DCE8E3] transition-colors whitespace-nowrap shrink-0 min-h-[48px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6EF]"
+                    data-testid="hero-access-calling-btn"
+                    onClick={() => onStartIntake('call')}
+                    className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#FAF6EF] text-[#0F3D3E] font-bold text-sm sm:text-base border-2 border-[#E9A23B]/75 hover:bg-[#DCE8E3] transition-colors whitespace-nowrap shrink-0 min-h-[48px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6EF]"
                   >
-                    <PhoneOutlinedIcon className="w-4 h-4" />
-                    <span>{t.hero.talkCta}</span>
+                    <PhoneCall className="w-4 h-4 text-[#B45309] shrink-0" aria-hidden="true" />
+                    <span>{c.accessCallingCta}</span>
                   </button>
                 </div>
                 <p className="text-sm text-[#DCE8E3]">
