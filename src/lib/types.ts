@@ -155,6 +155,34 @@ export type NearbyVerificationTier =
   | 'google_maps_directory'
   | 'incomplete_listing';
 
+export type OperatingStatusCategory =
+  | 'confirmed_open'
+  | 'published_hours_open'
+  | 'published_hours_closed'
+  | 'availability_unknown';
+
+export interface EmergencyHotline {
+  id: string;
+  name: string;
+  phone: string;
+  countryCode: string;
+  countryName: string;
+  categories: SupportCategoryId[];
+  description: string;
+  hours24x7: boolean;
+  hoursLabel: string;
+  websiteUri: string | null;
+  lastVerifiedDate: string | null;
+  sourceNote: string;
+  isUrgentEmergency: boolean;
+}
+
+export interface SupportDirectoryConfig {
+  version: string;
+  lastUpdated: string;
+  partnerDatabases: string[];
+}
+
 export interface NearbySupportCenter {
   id: string;
   name: string;
@@ -173,6 +201,13 @@ export interface NearbySupportCenter {
   openNowVerified: boolean | null;
   businessStatus?: string;
   sourceName: 'OneDoor Verified Partner' | 'Google Maps Directory';
+  operatingStatus: OperatingStatusCategory;
+  operatingStatusLabel: string;
+  hoursDetail?: string | null;
+  lastVerifiedDate?: string | null;
+  contactSource?: string | null;
+  phoneVerified?: boolean;
+  isEmergencyProvider?: boolean;
 }
 
 export interface NearbySearchResponse {
@@ -183,6 +218,9 @@ export interface NearbySearchResponse {
   mapsApiConfigured: boolean;
   hasVerifiedPartnerMatches: boolean;
   noResultsReason?: string;
+  emergencyHotlines?: EmergencyHotline[];
+  searchTimestamp?: string;
+  expandedSearchSuggested?: boolean;
 }
 
 export type ReferralStatus = 'Saved locally (not transmitted)' | 'Withdrawn';

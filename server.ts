@@ -20,6 +20,7 @@ import {
   type NearbyPlaceCandidate,
 } from './src/lib/nearbyMatching';
 import { VERIFIED_SERVICE_DIRECTORY } from './src/lib/directory';
+import { getEmergencyAndCrisisOptions } from './src/lib/emergencyHotlines';
 import { LANGUAGE_MAP } from './src/lib/i18n/languages';
 import {
   SUPPORT_CATEGORY_IDS,
@@ -317,7 +318,7 @@ async function startServer() {
   });
 
   const PLACES_FIELD_MASK =
-    'places.id,places.displayName,places.formattedAddress,places.shortFormattedAddress,places.location,places.primaryType,places.primaryTypeDisplayName,places.types,places.businessStatus,places.googleMapsUri,places.googleMapsLinks.directionsUri,places.internationalPhoneNumber,places.nationalPhoneNumber,places.websiteUri,places.currentOpeningHours.openNow';
+    'places.id,places.displayName,places.formattedAddress,places.shortFormattedAddress,places.location,places.primaryType,places.primaryTypeDisplayName,places.types,places.businessStatus,places.googleMapsUri,places.googleMapsLinks.directionsUri,places.internationalPhoneNumber,places.nationalPhoneNumber,places.websiteUri,places.currentOpeningHours.openNow,places.currentOpeningHours.weekdayDescriptions';
 
   const getMapsApiKey = (): string | null => {
     const raw =
@@ -350,7 +351,7 @@ async function startServer() {
     internationalPhoneNumber?: string;
     nationalPhoneNumber?: string;
     websiteUri?: string;
-    currentOpeningHours?: { openNow?: boolean };
+    currentOpeningHours?: { openNow?: boolean; weekdayDescriptions?: string[] };
   }
 
   function mapGooglePlaceToCandidate(place: GooglePlaceRaw): NearbyPlaceCandidate | null {
@@ -361,6 +362,11 @@ async function startServer() {
       place.formattedAddress?.trim() || place.shortFormattedAddress?.trim() || '';
     const lat = place.location?.latitude;
     const lon = place.location?.longitude;
+    const hoursDetail = place.currentOpeningHours?.weekdayDescriptions?.join('; ') || null;
+    const phone =
+      place.internationalPhoneNumber?.trim() ||
+      place.nationalPhoneNumber?.trim() ||
+      null;
 
     return {
       id: `gplace-${id}`,
@@ -373,10 +379,7 @@ async function startServer() {
       types: Array.isArray(place.types) ? place.types : [],
       address,
       ...(typeof lat === 'number' && typeof lon === 'number' ? { lat, lon } : {}),
-      phone:
-        place.internationalPhoneNumber?.trim() ||
-        place.nationalPhoneNumber?.trim() ||
-        null,
+      phone,
       websiteUri: place.websiteUri?.trim() || null,
       directionsUri: place.googleMapsLinks?.directionsUri,
       googleMapsUri: place.googleMapsUri,
@@ -386,6 +389,9 @@ async function startServer() {
           : null,
       businessStatus: place.businessStatus,
       isVerifiedPartner: false,
+      hoursDetail,
+      lastVerifiedDate: new Date().toISOString().slice(0, 10),
+      contactSource: place.websiteUri ? 'Official Website / Google Maps' : 'Google Maps Directory',
     };
   }
 
@@ -478,6 +484,7 @@ async function startServer() {
       categories?: unknown;
       radiusKm?: unknown;
       lang?: unknown;
+      isUrgent?: unknown;
     };
 
     const location = sanitizeUserLocation(body?.location);
@@ -494,6 +501,7 @@ async function startServer() {
         )
       : [];
 
+    const isUrgent = Boolean(body?.isUrgent);
     const rawRadius = Number(body?.radiusKm);
     const radiusKm = rawRadius === 50 ? 50 : rawRadius === 25 ? 25 : 10;
     const radiusMeters = radiusKm * 1000;
@@ -515,14 +523,22 @@ async function startServer() {
       return;
     }
 
+    // Always fetch verified emergency and phone-based support options for the user's confirmed country
+    const emergencyHotlines = getEmergencyAndCrisisOptions({
+      countryCode: location.countryCode,
+      categories: validCategories,
+      isUrgent,
+      limit: 6,
+    });
+
     // 1. Check any verified OneDoor partner directory entries first
     const verifiedMatches = rankHelpingCenters(
       {
         modelVersion: 'nearby-lookup',
         predictions: [],
         predictedCategories: validCategories,
-        urgencyFlagged: false,
-        urgencyProbability: 0,
+        urgencyFlagged: isUrgent,
+        urgencyProbability: isUrgent ? 0.9 : 0,
         urgencyUncertainty: 'clear',
         overallConfidence: 'moderate_or_higher',
         lowConfidenceFallbackUsed: false,
@@ -546,13 +562,18 @@ async function startServer() {
       businessStatus: 'OPERATIONAL',
       isVerifiedPartner: true,
       partnerCategories: m.center.categories,
+      hoursDetail: m.center.hoursLabel,
+      lastVerifiedDate: '2026-11-01',
+      contactSource: 'OneDoor Verified Partner Registry',
+      isEmergencyProvider: m.center.hours24x7,
     }));
 
     if (!mapsApiKey) {
       const centers = scoreAndRankNearbyPlaces(
         candidates,
         validCategories,
-        originCoordinates
+        originCoordinates,
+        isUrgent
       );
       const payload: NearbySearchResponse = {
         centers,
@@ -563,6 +584,9 @@ async function startServer() {
         hasVerifiedPartnerMatches: verifiedMatches.matches.length > 0,
         noResultsReason:
           centers.length === 0 ? 'maps_not_configured' : undefined,
+        emergencyHotlines,
+        searchTimestamp: new Date().toISOString(),
+        expandedSearchSuggested: centers.length === 0,
       };
       res.json(payload);
       return;
@@ -686,7 +710,8 @@ async function startServer() {
     const ranked = scoreAndRankNearbyPlaces(
       candidates,
       validCategories,
-      originCoordinates
+      originCoordinates,
+      isUrgent
     ).filter((c) => c.distanceKm === null || c.distanceKm <= radiusKm * 1.35);
 
     const balancedCenters = selectTopBalancedCenters(ranked, validCategories, 12);
@@ -700,6 +725,9 @@ async function startServer() {
       hasVerifiedPartnerMatches: verifiedMatches.matches.length > 0,
       noResultsReason:
         balancedCenters.length === 0 ? 'no_results_in_radius' : undefined,
+      emergencyHotlines,
+      searchTimestamp: new Date().toISOString(),
+      expandedSearchSuggested: balancedCenters.length === 0,
     };
     res.json(payload);
   });

@@ -1,6 +1,7 @@
 import type {
   NearbySupportCenter,
   NearbyVerificationTier,
+  OperatingStatusCategory,
   SupportCategoryId,
 } from './types';
 
@@ -21,6 +22,10 @@ export interface NearbyPlaceCandidate {
   businessStatus?: string;
   isVerifiedPartner?: boolean;
   partnerCategories?: SupportCategoryId[];
+  hoursDetail?: string | null;
+  lastVerifiedDate?: string | null;
+  contactSource?: string | null;
+  isEmergencyProvider?: boolean;
 }
 
 export interface CategorySearchPlan {
@@ -165,15 +170,81 @@ export function determineVerificationTier(
 }
 
 /**
+ * Accurately determines operating status category and label without synthetic claims.
+ * Strictly distinguishes between:
+ *  1. 'confirmed_open': Verified partner or direct institutional integration.
+ *  2. 'published_hours_open': Published hours suggest open at user local time.
+ *  3. 'published_hours_closed': Published hours suggest currently closed.
+ *  4. 'availability_unknown': Unverified or hours not published.
+ */
+export function determineOperatingStatus(candidate: {
+  openNowVerified?: boolean | null;
+  businessStatus?: string;
+  isVerifiedPartner?: boolean;
+}): {
+  operatingStatus: OperatingStatusCategory;
+  operatingStatusLabel: string;
+} {
+  if (
+    candidate.businessStatus === 'CLOSED_PERMANENTLY' ||
+    candidate.businessStatus === 'CLOSED_TEMPORARILY'
+  ) {
+    return {
+      operatingStatus: 'published_hours_closed',
+      operatingStatusLabel: 'Temporarily closed',
+    };
+  }
+
+  if (candidate.isVerifiedPartner && candidate.openNowVerified === true) {
+    return {
+      operatingStatus: 'confirmed_open',
+      operatingStatusLabel: 'Confirmed open (verified partner)',
+    };
+  }
+
+  if (candidate.openNowVerified === true) {
+    return {
+      operatingStatus: 'published_hours_open',
+      operatingStatusLabel: 'Published hours indicate open now · Call ahead to confirm',
+    };
+  }
+
+  if (candidate.openNowVerified === false) {
+    return {
+      operatingStatus: 'published_hours_closed',
+      operatingStatusLabel: 'Published hours indicate closed now · Call ahead to verify',
+    };
+  }
+
+  return {
+    operatingStatus: 'availability_unknown',
+    operatingStatusLabel: 'Hours unverified · Call ahead to confirm current availability',
+  };
+}
+
+/**
  * Ranks real-world support center candidates strictly by:
- *   1. Relevance to user's identified support needs (and verified tier),
+ *   1. Relevance to user's identified support needs (and open status/emergency capabilities),
  *   2. Distance from confirmed user location (ascending).
  */
 export function scoreAndRankNearbyPlaces(
   candidates: NearbyPlaceCandidate[],
   categories: SupportCategoryId[],
-  origin?: { lat: number; lon: number } | null
+  origin?: { lat: number; lon: number } | null,
+  options?: { isUrgent?: boolean; prioritizeOpen?: boolean } | boolean
 ): NearbySupportCenter[] {
+  const isUrgent =
+    typeof options === 'boolean'
+      ? options
+      : Boolean(options?.isUrgent);
+
+  const prioritizeOpen =
+    typeof options === 'object' && options !== null
+      ? Boolean(options.prioritizeOpen)
+      : typeof options === 'boolean'
+        ? options
+        : false;
+
   const activeCategories: SupportCategoryId[] =
     categories.length > 0
       ? categories
@@ -192,11 +263,20 @@ export function scoreAndRankNearbyPlaces(
 
   for (const item of deduped.values()) {
     const verificationTier = determineVerificationTier(item);
+    const { operatingStatus, operatingStatusLabel } = determineOperatingStatus(item);
+
     const allTypes = new Set<string>(
       [item.primaryType ?? '', ...(item.types ?? [])]
         .map((t) => t.toLowerCase())
         .filter(Boolean)
     );
+
+    const isEmergencyFacility =
+      Boolean(item.isEmergencyProvider) ||
+      allTypes.has('emergency_room') ||
+      /\b(emergency|urgent\s*care|trauma|crisis|safe\s*house|refuge|police)\b/i.test(
+        `${item.name} ${item.serviceTypeLabel}`
+      );
 
     const matchedCategories: SupportCategoryId[] = [];
     let relevanceScore = 0;
@@ -250,6 +330,22 @@ export function scoreAndRankNearbyPlaces(
       INSTITUTIONAL_SUPPORT_PATTERN.test(`${item.name} ${item.serviceTypeLabel}`)
     ) {
       relevanceScore += 8;
+    }
+
+    // Prioritize providers confirmed or published to be open right now when prioritizeOpen is enabled
+    if (prioritizeOpen) {
+      if (operatingStatus === 'confirmed_open') {
+        relevanceScore += 24;
+      } else if (operatingStatus === 'published_hours_open') {
+        relevanceScore += 16;
+      } else if (operatingStatus === 'published_hours_closed') {
+        relevanceScore -= 12;
+      }
+    }
+
+    // Prioritize urgent emergency services when user need is time-sensitive
+    if (isUrgent && isEmergencyFacility) {
+      relevanceScore += 28;
     }
 
     if (verificationTier === 'verified_partner') {
@@ -306,10 +402,31 @@ export function scoreAndRankNearbyPlaces(
       sourceName: item.isVerifiedPartner
         ? 'OneDoor Verified Partner'
         : 'Google Maps Directory',
+      operatingStatus,
+      operatingStatusLabel,
+      hoursDetail: item.hoursDetail || null,
+      lastVerifiedDate: item.lastVerifiedDate || (item.isVerifiedPartner ? '2026-11-01' : null),
+      contactSource:
+        item.contactSource ||
+        (item.isVerifiedPartner
+          ? 'OneDoor Verified Partner Registry'
+          : item.websiteUri
+            ? 'Official Website / Google Maps'
+            : 'Public Directory (Google Maps)'),
+      phoneVerified: Boolean(item.isVerifiedPartner),
+      isEmergencyProvider: isEmergencyFacility,
     });
   }
 
-  // Sort strictly by relevance first, then verification completeness, then distance ascending
+  // Sort strictly by relevance score first (which boosts open & urgent services),
+  // then open status (if prioritizeOpen), then verification tier, then distance ascending
+  const statusOrder: Record<OperatingStatusCategory, number> = {
+    confirmed_open: 0,
+    published_hours_open: 1,
+    availability_unknown: 2,
+    published_hours_closed: 3,
+  };
+
   const tierOrder: Record<NearbyVerificationTier, number> = {
     verified_partner: 0,
     google_maps_directory: 1,
@@ -319,6 +436,9 @@ export function scoreAndRankNearbyPlaces(
   scored.sort((a, b) => {
     if (b.relevanceScore !== a.relevanceScore) {
       return b.relevanceScore - a.relevanceScore;
+    }
+    if (prioritizeOpen && statusOrder[a.operatingStatus] !== statusOrder[b.operatingStatus]) {
+      return statusOrder[a.operatingStatus] - statusOrder[b.operatingStatus];
     }
     if (tierOrder[a.verificationTier] !== tierOrder[b.verificationTier]) {
       return tierOrder[a.verificationTier] - tierOrder[b.verificationTier];

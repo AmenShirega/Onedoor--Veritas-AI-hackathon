@@ -31,6 +31,17 @@ export interface NearbySchema {
   mapsNotConfiguredTitle: string;
   mapsNotConfiguredBody: string;
   searchErrorBody: string;
+  emergencySectionTitle: string;
+  emergencySectionSubtitle: string;
+  badgeConfirmedOpen: string;
+  badgePublishedOpen: string;
+  badgePublishedClosed: string;
+  badgeAvailabilityUnknown: string;
+  lastVerifiedPrefix: string;
+  unverifiedContactLabel: string;
+  officialWebsite: string;
+  disclaimerNoReferral: string;
+  expandedSearchNotice: string;
 }
 
 const EN_NEARBY: NearbySchema = {
@@ -70,6 +81,17 @@ const EN_NEARBY: NearbySchema = {
     'No directly vetted OneDoor partners or live map directory results could be loaded for this area. You can still save and download your personal summary below.',
   searchErrorBody:
     'Could not load nearby centers right now. Try again or broaden your search area.',
+  emergencySectionTitle: 'Emergency services & crisis phone lines',
+  emergencySectionSubtitle: 'If you are in immediate danger or need urgent help, reach out directly to emergency responders or 24/7 crisis helplines.',
+  badgeConfirmedOpen: 'Confirmed open now',
+  badgePublishedOpen: 'Published hours indicate open now',
+  badgePublishedClosed: 'Published hours indicate closed now',
+  badgeAvailabilityUnknown: 'Hours unverified · Call ahead',
+  lastVerifiedPrefix: 'Verified: {date}',
+  unverifiedContactLabel: 'Unverified listing',
+  officialWebsite: 'Official website',
+  disclaimerNoReferral: 'Finding or listing a provider does not imply they have accepted a referral or confirmed availability.',
+  expandedSearchNotice: 'No providers found within your initial radius. Showing expanded search options and phone-based crisis lines.',
 };
 
 export const NEARBY_TRANSLATIONS: Record<LanguageCode, NearbySchema> = {

@@ -15,10 +15,16 @@ import { rankHelpingCenters } from './matching';
 import {
   buildGoogleDirectionsUrl,
   computeHaversineDistanceKm,
+  determineOperatingStatus,
   determineVerificationTier,
   scoreAndRankNearbyPlaces,
   selectTopBalancedCenters,
 } from './nearbyMatching';
+import {
+  getEmergencyAndCrisisOptions,
+  UNIVERSAL_EMERGENCY_NUMBERS,
+  VERIFIED_CRISIS_HOTLINES,
+} from './emergencyHotlines';
 import { buildConsentedReferralPayload } from './referralBuilder';
 import type { HelpingCenter, ModelWeightsFile, UserLocation } from './types';
 
@@ -459,4 +465,131 @@ test('scoreAndRankNearbyPlaces ranks strictly by relevance first then distance, 
   assert.equal(balanced[0].id, 'med-0');
   assert.equal(balanced[balanced.length - 1].id, 'legal-1');
 });
+
+test('Temporary directory operating status distinguishes verified open, published hours, closed, and unknown', () => {
+  // 1. Verified partner with openNowVerified: true -> confirmed_open
+  const partnerOpen = determineOperatingStatus({
+    openNowVerified: true,
+    isVerifiedPartner: true,
+    businessStatus: 'OPERATIONAL',
+  });
+  assert.equal(partnerOpen.operatingStatus, 'confirmed_open');
+  assert.ok(partnerOpen.operatingStatusLabel.includes('Confirmed open'));
+
+  // 2. Google Maps / public directory with openNowVerified: true -> published_hours_open (not confirmed real-time)
+  const directoryOpen = determineOperatingStatus({
+    openNowVerified: true,
+    isVerifiedPartner: false,
+    businessStatus: 'OPERATIONAL',
+  });
+  assert.equal(directoryOpen.operatingStatus, 'published_hours_open');
+  assert.ok(directoryOpen.operatingStatusLabel.includes('Call ahead to confirm'));
+
+  // 3. openNowVerified: false -> published_hours_closed
+  const directoryClosed = determineOperatingStatus({
+    openNowVerified: false,
+    isVerifiedPartner: false,
+    businessStatus: 'OPERATIONAL',
+  });
+  assert.equal(directoryClosed.operatingStatus, 'published_hours_closed');
+
+  // 4. Temporarily or permanently closed -> published_hours_closed
+  const tempClosed = determineOperatingStatus({
+    openNowVerified: true,
+    businessStatus: 'CLOSED_TEMPORARILY',
+  });
+  assert.equal(tempClosed.operatingStatus, 'published_hours_closed');
+  assert.equal(tempClosed.operatingStatusLabel, 'Temporarily closed');
+
+  // 5. No hours data -> availability_unknown (unverified, never guessed)
+  const unknown = determineOperatingStatus({
+    openNowVerified: null,
+    businessStatus: 'OPERATIONAL',
+  });
+  assert.equal(unknown.operatingStatus, 'availability_unknown');
+  assert.ok(unknown.operatingStatusLabel.includes('unverified'));
+});
+
+test('Prioritizes open and urgent emergency facilities when prioritizeOpen and isUrgent options are enabled', () => {
+  const origin = { lat: 51.5074, lon: -0.1278 };
+  const candidates = [
+    {
+      id: 'closed-general-clinic',
+      name: 'Central General Clinic',
+      serviceTypeLabel: 'Clinic',
+      primaryType: 'medical_clinic',
+      types: ['medical_clinic'],
+      address: '1 Close St',
+      lat: 51.508,
+      lon: -0.128, // closer (0.5 km)
+      phone: '+44 20 0000 0001',
+      openNowVerified: false,
+    },
+    {
+      id: 'open-er-hospital',
+      name: 'St Thomas Emergency & Trauma Hospital',
+      serviceTypeLabel: 'Hospital',
+      primaryType: 'hospital',
+      types: ['hospital', 'emergency_room'],
+      address: '10 Lambeth Rd',
+      lat: 51.498,
+      lon: -0.18, // further (4 km)
+      phone: '+44 20 0000 0002',
+      openNowVerified: true,
+      isEmergencyProvider: true,
+    },
+  ];
+
+  // With prioritizeOpen and isUrgent enabled, the open emergency hospital is ranked first despite distance
+  const prioritized = scoreAndRankNearbyPlaces(
+    candidates,
+    ['medical_support'],
+    origin,
+    { isUrgent: true, prioritizeOpen: true }
+  );
+
+  assert.equal(prioritized[0].id, 'open-er-hospital');
+  assert.equal(prioritized[0].operatingStatus, 'published_hours_open');
+  assert.equal(prioritized[0].isEmergencyProvider, true);
+  assert.equal(prioritized[1].id, 'closed-general-clinic');
+  assert.equal(prioritized[1].operatingStatus, 'published_hours_closed');
+});
+
+test('International emergency and crisis helplines registry returns verified numbers and never invents synthetic data', () => {
+  // 1. Known countries return their universal emergency numbers
+  assert.equal(UNIVERSAL_EMERGENCY_NUMBERS['US'].phone, '911');
+  assert.equal(UNIVERSAL_EMERGENCY_NUMBERS['GB'].phone, '999');
+  assert.equal(UNIVERSAL_EMERGENCY_NUMBERS['ZA'].phone, '112');
+  assert.equal(UNIVERSAL_EMERGENCY_NUMBERS['KE'].phone, '999');
+  assert.equal(UNIVERSAL_EMERGENCY_NUMBERS['ET'].phone, '991');
+  assert.equal(UNIVERSAL_EMERGENCY_NUMBERS['IN'].phone, '112');
+  assert.equal(UNIVERSAL_EMERGENCY_NUMBERS['DE'].phone, '112');
+
+  // 2. Query for US sexual violence support returns 911 emergency and RAINN / Domestic Violence hotline
+  const usOptions = getEmergencyAndCrisisOptions({
+    countryCode: 'US',
+    categories: ['sexual_violence_support'],
+    isUrgent: true,
+  });
+  assert.ok(usOptions.length >= 2);
+  assert.equal(usOptions[0].phone, '911');
+  assert.ok(usOptions.some((h) => h.phone === '1-800-656-4673' || h.phone === '1-800-799-7233'));
+
+  // 3. Every single crisis hotline has a valid source note and last verified date
+  for (const h of VERIFIED_CRISIS_HOTLINES) {
+    assert.ok(h.name.trim().length > 3, `Missing name for hotline ${h.id}`);
+    assert.ok(h.sourceNote.trim().length > 3, `Missing sourceNote for hotline ${h.id}`);
+    assert.ok(h.lastVerifiedDate, `Missing lastVerifiedDate for hotline ${h.id}`);
+  }
+
+  // 4. Country without local registry entries safely falls back to international resources without inventing numbers
+  const intlFallback = getEmergencyAndCrisisOptions({
+    countryCode: 'ZZ',
+    categories: ['psychological_support'],
+    isUrgent: false,
+  });
+  assert.ok(intlFallback.length > 0);
+  assert.ok(intlFallback.every((h) => h.countryCode === 'INTL' || h.countryCode === 'ZZ'));
+});
+
 

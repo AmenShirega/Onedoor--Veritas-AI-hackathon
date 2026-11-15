@@ -160,11 +160,17 @@ export function IntakeFlowView({
   const fetchNearbyCenters = async (
     confirmedLoc: UserLocation,
     categories: SupportCategoryId[],
-    radiusKm: 10 | 25 | 50
+    radiusKm: 10 | 25 | 50,
+    urgentOverride?: boolean
   ) => {
     setNearbyLoading(true);
     setNearbyError(null);
     try {
+      const isUrgent =
+        typeof urgentOverride === 'boolean'
+          ? urgentOverride
+          : Boolean(classification?.urgencyFlagged);
+
       const resp = await fetch('/api/centers/nearby', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -174,6 +180,7 @@ export function IntakeFlowView({
           categories,
           radiusKm,
           lang,
+          isUrgent,
         }),
       });
       const data = (await resp.json()) as NearbySearchResponse & {
@@ -404,6 +411,10 @@ export function IntakeFlowView({
       });
       setSelectedCenterId(reranked.matches[0]?.center.id ?? 'self-directed-summary');
 
+      if (location) {
+        void fetchNearbyCenters(location, incomingSuggestions, nearbyRadiusKm, cls.urgencyFlagged);
+      }
+
       const replyId = `onedoor-${Date.now()}`;
       setMessages((prev) => [
         ...prev.map((m) => (m.id === msgId ? { ...m, status: 'received' as const } : m)),
@@ -431,9 +442,13 @@ export function IntakeFlowView({
     setUserToggledCategories((prev) =>
       prev.includes(catId) ? prev : [...prev, catId]
     );
-    setApprovedCategories((prev) =>
-      prev.includes(catId) ? prev.filter((c) => c !== catId) : [...prev, catId]
-    );
+    const nextCategories = approvedCategories.includes(catId)
+      ? approvedCategories.filter((c) => c !== catId)
+      : [...approvedCategories, catId];
+    setApprovedCategories(nextCategories);
+    if (location) {
+      void fetchNearbyCenters(location, nextCategories, nearbyRadiusKm);
+    }
   };
 
   const allUserTexts = messages
