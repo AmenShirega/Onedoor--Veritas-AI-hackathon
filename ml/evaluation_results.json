@@ -1,0 +1,540 @@
+{
+  "research_question": "Which urgent cases does the model miss, and for what kinds of messages?",
+  "dataset_summary": {
+    "total_synthetic_examples": 200,
+    "train_count": 140,
+    "held_out_test_count": 60,
+    "labels": [
+      "medical_support",
+      "psychological_support",
+      "protection_safeguarding",
+      "legal_support",
+      "sexual_violence_support",
+      "social_support"
+    ],
+    "label_names": {
+      "medical_support": "Medical support",
+      "psychological_support": "Psychological support",
+      "protection_safeguarding": "Protection and safeguarding",
+      "legal_support": "Legal support",
+      "sexual_violence_support": "Sexual-violence support",
+      "social_support": "Social support"
+    },
+    "all_synthetic": true,
+    "language": "English only (Amharic UI translation does not alter classifier input)"
+  },
+  "trainer": "Pure-Python TF-IDF + L2 Logistic Regression (scikit-learn mathematical equivalent; sklearn not installed in container)",
+  "baseline_comparison": {
+    "majority_class": {
+      "multilabel": {
+        "macro_f1": 0.1159,
+        "micro_f1": 0.3168,
+        "micro_precision": 0.5333,
+        "micro_recall": 0.2254,
+        "hamming_accuracy": 0.6167,
+        "total_false_negatives": 110,
+        "total_false_positives": 28,
+        "per_label": {
+          "medical_support": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 24,
+            "tn": 36,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "accuracy": 0.6
+          },
+          "psychological_support": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 29,
+            "tn": 31,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "accuracy": 0.5167
+          },
+          "protection_safeguarding": {
+            "tp": 32,
+            "fp": 28,
+            "fn": 0,
+            "tn": 0,
+            "precision": 0.5333,
+            "recall": 1.0,
+            "f1": 0.6957,
+            "accuracy": 0.5333
+          },
+          "legal_support": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 23,
+            "tn": 37,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "accuracy": 0.6167
+          },
+          "sexual_violence_support": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 16,
+            "tn": 44,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "accuracy": 0.7333
+          },
+          "social_support": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 18,
+            "tn": 42,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "accuracy": 0.7
+          }
+        }
+      },
+      "urgency": {
+        "tp": 37,
+        "fp": 23,
+        "fn": 0,
+        "tn": 0,
+        "precision": 0.6167,
+        "recall": 1.0,
+        "f1": 0.7629,
+        "accuracy": 0.6167
+      }
+    },
+    "keyword_rule": {
+      "multilabel": {
+        "macro_f1": 0.6757,
+        "micro_f1": 0.6773,
+        "micro_precision": 0.7798,
+        "micro_recall": 0.5986,
+        "hamming_accuracy": 0.775,
+        "total_false_negatives": 57,
+        "total_false_positives": 24,
+        "per_label": {
+          "medical_support": {
+            "tp": 17,
+            "fp": 1,
+            "fn": 7,
+            "tn": 35,
+            "precision": 0.9444,
+            "recall": 0.7083,
+            "f1": 0.8095,
+            "accuracy": 0.8667
+          },
+          "psychological_support": {
+            "tp": 14,
+            "fp": 4,
+            "fn": 15,
+            "tn": 27,
+            "precision": 0.7778,
+            "recall": 0.4828,
+            "f1": 0.5957,
+            "accuracy": 0.6833
+          },
+          "protection_safeguarding": {
+            "tp": 22,
+            "fp": 7,
+            "fn": 10,
+            "tn": 21,
+            "precision": 0.7586,
+            "recall": 0.6875,
+            "f1": 0.7213,
+            "accuracy": 0.7167
+          },
+          "legal_support": {
+            "tp": 10,
+            "fp": 2,
+            "fn": 13,
+            "tn": 35,
+            "precision": 0.8333,
+            "recall": 0.4348,
+            "f1": 0.5714,
+            "accuracy": 0.75
+          },
+          "sexual_violence_support": {
+            "tp": 10,
+            "fp": 1,
+            "fn": 6,
+            "tn": 43,
+            "precision": 0.9091,
+            "recall": 0.625,
+            "f1": 0.7407,
+            "accuracy": 0.8833
+          },
+          "social_support": {
+            "tp": 12,
+            "fp": 9,
+            "fn": 6,
+            "tn": 33,
+            "precision": 0.5714,
+            "recall": 0.6667,
+            "f1": 0.6154,
+            "accuracy": 0.75
+          }
+        }
+      },
+      "urgency": {
+        "tp": 20,
+        "fp": 5,
+        "fn": 17,
+        "tn": 18,
+        "precision": 0.8,
+        "recall": 0.5405,
+        "f1": 0.6452,
+        "accuracy": 0.6333
+      }
+    },
+    "trained_tfidf_logreg": {
+      "multilabel": {
+        "macro_f1": 0.6622,
+        "micro_f1": 0.6716,
+        "micro_precision": 0.7143,
+        "micro_recall": 0.6338,
+        "hamming_accuracy": 0.7556,
+        "total_false_negatives": 52,
+        "total_false_positives": 36,
+        "per_label": {
+          "medical_support": {
+            "tp": 16,
+            "fp": 2,
+            "fn": 8,
+            "tn": 34,
+            "precision": 0.8889,
+            "recall": 0.6667,
+            "f1": 0.7619,
+            "accuracy": 0.8333
+          },
+          "psychological_support": {
+            "tp": 14,
+            "fp": 2,
+            "fn": 15,
+            "tn": 29,
+            "precision": 0.875,
+            "recall": 0.4828,
+            "f1": 0.6222,
+            "accuracy": 0.7167
+          },
+          "protection_safeguarding": {
+            "tp": 28,
+            "fp": 22,
+            "fn": 4,
+            "tn": 6,
+            "precision": 0.56,
+            "recall": 0.875,
+            "f1": 0.6829,
+            "accuracy": 0.5667
+          },
+          "legal_support": {
+            "tp": 15,
+            "fp": 1,
+            "fn": 8,
+            "tn": 36,
+            "precision": 0.9375,
+            "recall": 0.6522,
+            "f1": 0.7692,
+            "accuracy": 0.85
+          },
+          "sexual_violence_support": {
+            "tp": 9,
+            "fp": 4,
+            "fn": 7,
+            "tn": 40,
+            "precision": 0.6923,
+            "recall": 0.5625,
+            "f1": 0.6207,
+            "accuracy": 0.8167
+          },
+          "social_support": {
+            "tp": 8,
+            "fp": 5,
+            "fn": 10,
+            "tn": 37,
+            "precision": 0.6154,
+            "recall": 0.4444,
+            "f1": 0.5161,
+            "accuracy": 0.75
+          }
+        }
+      },
+      "urgency": {
+        "tp": 35,
+        "fp": 16,
+        "fn": 2,
+        "tn": 7,
+        "precision": 0.6863,
+        "recall": 0.9459,
+        "f1": 0.7955,
+        "accuracy": 0.7
+      }
+    }
+  },
+  "performance_by_language_style": {
+    "direct": {
+      "count": 28,
+      "urgent_count": 11,
+      "multilabel_macro_f1": 0.6883,
+      "multilabel_micro_f1": 0.6667,
+      "urgency_recall": 1.0,
+      "urgency_false_negatives": 0,
+      "urgency_false_positives": 10,
+      "urgency_f1": 0.6875
+    },
+    "euphemistic": {
+      "count": 11,
+      "urgent_count": 8,
+      "multilabel_macro_f1": 0.4237,
+      "multilabel_micro_f1": 0.5965,
+      "urgency_recall": 1.0,
+      "urgency_false_negatives": 0,
+      "urgency_false_positives": 3,
+      "urgency_f1": 0.8421
+    },
+    "distressed_fragmented": {
+      "count": 10,
+      "urgent_count": 9,
+      "multilabel_macro_f1": 0.5012,
+      "multilabel_micro_f1": 0.6471,
+      "urgency_recall": 0.7778,
+      "urgency_false_negatives": 2,
+      "urgency_false_positives": 1,
+      "urgency_f1": 0.8235
+    },
+    "third_person": {
+      "count": 11,
+      "urgent_count": 9,
+      "multilabel_macro_f1": 0.7223,
+      "multilabel_micro_f1": 0.7619,
+      "urgency_recall": 1.0,
+      "urgency_false_negatives": 0,
+      "urgency_false_positives": 2,
+      "urgency_f1": 0.9
+    }
+  },
+  "performance_by_message_length": {
+    "short": {
+      "count": 9,
+      "urgent_count": 8,
+      "multilabel_macro_f1": 0.5778,
+      "multilabel_micro_f1": 0.7333,
+      "urgency_recall": 0.75,
+      "urgency_false_negatives": 2,
+      "urgency_false_positives": 1,
+      "urgency_f1": 0.8
+    },
+    "medium": {
+      "count": 31,
+      "urgent_count": 16,
+      "multilabel_macro_f1": 0.6451,
+      "multilabel_micro_f1": 0.6715,
+      "urgency_recall": 1.0,
+      "urgency_false_negatives": 0,
+      "urgency_false_positives": 9,
+      "urgency_f1": 0.7805
+    },
+    "long": {
+      "count": 20,
+      "urgent_count": 13,
+      "multilabel_macro_f1": 0.6464,
+      "multilabel_micro_f1": 0.6535,
+      "urgency_recall": 1.0,
+      "urgency_false_negatives": 0,
+      "urgency_false_positives": 6,
+      "urgency_f1": 0.8125
+    }
+  },
+  "misclassified_test_examples": [
+    {
+      "id": "syn-080",
+      "text": "need safe place now",
+      "language_style": "distressed_fragmented",
+      "message_length": "short",
+      "true_urgent": true,
+      "predicted_urgent": false,
+      "urgency_probability": 0.412,
+      "true_labels": [
+        "protection_safeguarding",
+        "social_support"
+      ],
+      "predicted_labels": [],
+      "missed_labels": [
+        "protection_safeguarding",
+        "social_support"
+      ],
+      "extra_labels": [],
+      "error_type": "Missed Urgent Case (False Negative)"
+    },
+    {
+      "id": "syn-133",
+      "text": "need someone to talk to feel hopeless",
+      "language_style": "distressed_fragmented",
+      "message_length": "short",
+      "true_urgent": true,
+      "predicted_urgent": false,
+      "urgency_probability": 0.29,
+      "true_labels": [
+        "psychological_support"
+      ],
+      "predicted_labels": [
+        "psychological_support"
+      ],
+      "missed_labels": [],
+      "extra_labels": [],
+      "error_type": "Missed Urgent Case (False Negative)"
+    },
+    {
+      "id": "syn-011",
+      "text": "My neighbor follows me from the taxi stop in Yeka every evening and stands outside my gate shouting insults. I feel anxious walking home alone.",
+      "language_style": "direct",
+      "message_length": "medium",
+      "true_urgent": false,
+      "predicted_urgent": true,
+      "urgency_probability": 0.666,
+      "true_labels": [
+        "psychological_support",
+        "protection_safeguarding",
+        "legal_support"
+      ],
+      "predicted_labels": [
+        "protection_safeguarding"
+      ],
+      "missed_labels": [
+        "psychological_support",
+        "legal_support"
+      ],
+      "extra_labels": [],
+      "error_type": "False Urgent Alarm (False Positive)"
+    },
+    {
+      "id": "syn-033",
+      "text": "He took what he wanted from me while I was half asleep from fever medicine. I am ashamed to say the word out loud and I do not know if I can get pregnant from this.",
+      "language_style": "euphemistic",
+      "message_length": "long",
+      "true_urgent": true,
+      "predicted_urgent": true,
+      "urgency_probability": 0.753,
+      "true_labels": [
+        "medical_support",
+        "psychological_support",
+        "sexual_violence_support"
+      ],
+      "predicted_labels": [
+        "medical_support",
+        "protection_safeguarding"
+      ],
+      "missed_labels": [
+        "psychological_support",
+        "sexual_violence_support"
+      ],
+      "extra_labels": [
+        "protection_safeguarding"
+      ],
+      "error_type": "Missed Support Category (False Negative)"
+    },
+    {
+      "id": "syn-035",
+      "text": "My husband refuses to let me work or keep any money, and yells at me daily in front of the neighbors in Lemi Kura. I want to know my legal rights if I leave.",
+      "language_style": "direct",
+      "message_length": "long",
+      "true_urgent": false,
+      "predicted_urgent": true,
+      "urgency_probability": 0.538,
+      "true_labels": [
+        "psychological_support",
+        "legal_support",
+        "social_support"
+      ],
+      "predicted_labels": [
+        "protection_safeguarding",
+        "legal_support"
+      ],
+      "missed_labels": [
+        "psychological_support",
+        "social_support"
+      ],
+      "extra_labels": [
+        "protection_safeguarding"
+      ],
+      "error_type": "False Urgent Alarm (False Positive)"
+    },
+    {
+      "id": "syn-042",
+      "text": "My friend is pregnant after an assault three months ago and her family told her not to come home. She needs prenatal care and a safe place to stay.",
+      "language_style": "third_person",
+      "message_length": "long",
+      "true_urgent": true,
+      "predicted_urgent": true,
+      "urgency_probability": 0.622,
+      "true_labels": [
+        "medical_support",
+        "protection_safeguarding",
+        "sexual_violence_support",
+        "social_support"
+      ],
+      "predicted_labels": [
+        "protection_safeguarding",
+        "social_support"
+      ],
+      "missed_labels": [
+        "medical_support",
+        "sexual_violence_support"
+      ],
+      "extra_labels": [],
+      "error_type": "Missed Support Category (False Negative)"
+    },
+    {
+      "id": "syn-068",
+      "text": "My boyfriend slapped me and took all my saved cash from my drawer before leaving. Now I cannot pay for transport or groceries this week.",
+      "language_style": "direct",
+      "message_length": "medium",
+      "true_urgent": false,
+      "predicted_urgent": true,
+      "urgency_probability": 0.632,
+      "true_labels": [
+        "protection_safeguarding",
+        "legal_support",
+        "social_support"
+      ],
+      "predicted_labels": [
+        "protection_safeguarding"
+      ],
+      "missed_labels": [
+        "legal_support",
+        "social_support"
+      ],
+      "extra_labels": [],
+      "error_type": "False Urgent Alarm (False Positive)"
+    },
+    {
+      "id": "syn-075",
+      "text": "He says a wife cannot say no and hurts me almost every week when he comes back late. My body feels broken and I do not know if clinics consider this an emergency.",
+      "language_style": "euphemistic",
+      "message_length": "long",
+      "true_urgent": true,
+      "predicted_urgent": true,
+      "urgency_probability": 0.792,
+      "true_labels": [
+        "medical_support",
+        "psychological_support",
+        "protection_safeguarding",
+        "sexual_violence_support"
+      ],
+      "predicted_labels": [
+        "medical_support",
+        "protection_safeguarding"
+      ],
+      "missed_labels": [
+        "psychological_support",
+        "sexual_violence_support"
+      ],
+      "extra_labels": [],
+      "error_type": "Missed Support Category (False Negative)"
+    }
+  ]
+}

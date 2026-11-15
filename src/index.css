@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --onedoor-teal: #0f3d3e;
+    --onedoor-teal-hover: #0a2c2d;
+    --onedoor-amber: #e9a23b;
+    --onedoor-amber-hover: #d89029;
+    --onedoor-cream: #faf6ef;
+    --onedoor-ink: #14202b;
+    --onedoor-sage: #dce8e3;
+    --onedoor-alert: #b91c1c;
+  }
+
+  html {
+    background-color: #faf6ef;
+    color: #14202b;
+    font-family: 'Manrope', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .font-mono-tabular {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

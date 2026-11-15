@@ -1,0 +1,6 @@
+{
+  "name": "OneDoor",
+  "description": "A calm, privacy-first support entry point helping people affected by violence or harassment find suitable services through trained ML classification, transparent matching, and explicit consent.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

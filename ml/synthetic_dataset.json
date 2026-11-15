@@ -1,0 +1,1802 @@
+[
+  {
+    "id": "syn-001",
+    "synthetic": true,
+    "text": "My husband hit me across the face last night in Bole and took my phone. My cheek is swollen and I have nowhere safe to stay tonight.",
+    "labels": ["medical_support", "protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-002",
+    "synthetic": true,
+    "text": "I was raped two hours ago near Megenagna by someone I met after work. I am bleeding and terrified to tell my family.",
+    "labels": ["medical_support", "psychological_support", "sexual_violence_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-003",
+    "synthetic": true,
+    "text": "My supervisor at the office in Kirkos keeps grabbing my waist and texting me late at night threatening to fire me if I refuse him. I want to know how to report him safely.",
+    "labels": ["legal_support", "psychological_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-004",
+    "synthetic": true,
+    "text": "Last year my former partner hit me several times before I moved to Arada. I am safe now, but I still wake up from nightmares and cannot focus in university classes.",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-005",
+    "synthetic": true,
+    "text": "My landlord locked my room in Lideta because I refused his sexual advances and now my clothes and ID are inside. I have no money for a guesthouse tonight.",
+    "labels": ["protection_safeguarding", "legal_support", "social_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-006",
+    "synthetic": true,
+    "text": "Asking for my 16 year old sister in Kolfe Keranio. Our uncle touched her inappropriately yesterday evening and told her she would be kicked out if she speaks up.",
+    "labels": ["protection_safeguarding", "sexual_violence_support", "psychological_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-007",
+    "synthetic": true,
+    "text": "Someone in my house crossed a line with me last night after everyone slept. I did not say yes and now my lower stomach hurts and I feel dirty.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-008",
+    "synthetic": true,
+    "text": "help he broke the door bole cant breathe",
+    "labels": ["protection_safeguarding", "medical_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-009",
+    "synthetic": true,
+    "text": "I left an abusive marriage three months ago in Gullele. I need legal advice on child custody and help paying rent while I look for tailoring work.",
+    "labels": ["legal_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-010",
+    "synthetic": true,
+    "text": "A friend from college forced me to drink something at a party in Bole yesterday and I woke up with bruises and torn clothes. I do not remember everything clearly.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-011",
+    "synthetic": true,
+    "text": "My neighbor follows me from the taxi stop in Yeka every evening and stands outside my gate shouting insults. I feel anxious walking home alone.",
+    "labels": ["protection_safeguarding", "psychological_support", "legal_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-012",
+    "synthetic": true,
+    "text": "I need someone to talk to without judgment. My family blames me for an assault that happened two years ago and I feel completely alone.",
+    "labels": ["psychological_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-013",
+    "synthetic": true,
+    "text": "My older brother beat me with a belt this morning and my wrist cannot bend. He said if I step outside again he will hurt me worse.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-014",
+    "synthetic": true,
+    "text": "Please advise on behalf of my neighbor in Lemi Kura. Her husband throws her and her baby out whenever he drinks and they slept in the hallway last night.",
+    "labels": ["protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-015",
+    "synthetic": true,
+    "text": "I do not want police right now, I just want a quiet nurse to check me after what my fiance forced me to do last night.",
+    "labels": ["medical_support", "sexual_violence_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-016",
+    "synthetic": true,
+    "text": "shouting outside my gate right now scared",
+    "labels": ["protection_safeguarding", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-017",
+    "synthetic": true,
+    "text": "My ex-boyfriend is threatening to send private photos of me to my relatives in Addis Ababa unless I meet him tonight.",
+    "labels": ["protection_safeguarding", "legal_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-018",
+    "synthetic": true,
+    "text": "I work as a domestic helper in Bole and the homeowner refuses to pay me for four months and slapped me when I asked to leave.",
+    "labels": ["protection_safeguarding", "legal_support", "social_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-019",
+    "synthetic": true,
+    "text": "Can someone explain what documents I need to file a formal complaint for workplace sexual harassment in Ethiopia?",
+    "labels": ["legal_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-020",
+    "synthetic": true,
+    "text": "My cousin came to stay with us in Arada and keeps coming into my bed when my aunt goes to church. Nobody believes me when I hint at it.",
+    "labels": ["protection_safeguarding", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-021",
+    "synthetic": true,
+    "text": "I fell and hurt my shoulder while running away from a man who grabbed my bag and tried to pull me into an alley near Piassa tonight.",
+    "labels": ["medical_support", "protection_safeguarding", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-022",
+    "synthetic": true,
+    "text": "My friend is crying nonstop in her dorm at Sidist Kilo after a date did not listen when she told him to stop yesterday evening. She refuses to eat or go to clinic.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-023",
+    "synthetic": true,
+    "text": "I need transport support and temporary housing after leaving a violent household in Kolfe Keranio last week. I have two small children.",
+    "labels": ["social_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-024",
+    "synthetic": true,
+    "text": "hit me with a kettle arm burning",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-025",
+    "synthetic": true,
+    "text": "I keep having panic attacks whenever I hear loud footsteps on the stairs since the assault six months ago.",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-026",
+    "synthetic": true,
+    "text": "The driver of a minibus touched my leg repeatedly and insulted me when I shouted. I made it home safely, just feeling shaken and angry.",
+    "labels": ["psychological_support", "legal_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-027",
+    "synthetic": true,
+    "text": "I cannot go back inside that apartment tonight. He drank all evening and smashed the dishes near my feet and said today is my last day.",
+    "labels": ["protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-028",
+    "synthetic": true,
+    "text": "Need urgent PEP medication info. Assaulted about 18 hours ago in Yeka.",
+    "labels": ["medical_support", "sexual_violence_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-029",
+    "synthetic": true,
+    "text": "My sister is staying at my tiny room in Akaky Kaliti after her partner kicked her out without her shoes or money. How can we get emergency food and shelter?",
+    "labels": ["social_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-030",
+    "synthetic": true,
+    "text": "A professor hinted I will fail my thesis unless I meet him alone in a hotel room. I want confidential advice on academic and legal protection.",
+    "labels": ["legal_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-031",
+    "synthetic": true,
+    "text": "dizzy and bleeding from earlier dont know where to go",
+    "labels": ["medical_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-032",
+    "synthetic": true,
+    "text": "My father hits my mother every weekend and last night he pushed me down the concrete steps when I tried to step between them. My ankle is very swollen.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-033",
+    "synthetic": true,
+    "text": "He took what he wanted from me while I was half asleep from fever medicine. I am ashamed to say the word out loud and I do not know if I can get pregnant from this.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-034",
+    "synthetic": true,
+    "text": "Looking for free counseling in Addis Ababa for someone recovering from childhood abuse.",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-035",
+    "synthetic": true,
+    "text": "My husband refuses to let me work or keep any money, and yells at me daily in front of the neighbors in Lemi Kura. I want to know my legal rights if I leave.",
+    "labels": ["legal_support", "social_support", "psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-036",
+    "synthetic": true,
+    "text": "locked in the bathroom he is banging on the door",
+    "labels": ["protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-037",
+    "synthetic": true,
+    "text": "My coworker told my niece in Nifas Silk-Lafto that if she tells anyone what happened in the storage room, nobody will hire her again. She has been throwing up from stress since morning.",
+    "labels": ["sexual_violence_support", "psychological_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-038",
+    "synthetic": true,
+    "text": "I need a medical checkup and forensic documentation after a physical assault by a former partner two days ago. My ribs ache when I breathe.",
+    "labels": ["medical_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-039",
+    "synthetic": true,
+    "text": "Things at home have gotten very heavy again. My partner keeps checking my bag and twisted my wrist this afternoon because lunch was late.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-040",
+    "synthetic": true,
+    "text": "I escaped an abusive situation months ago and now live safely with my aunt, but I need vocational training or job placement support.",
+    "labels": ["social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-041",
+    "synthetic": true,
+    "text": "A stranger followed me into a building staircase in Bole today and touched my chest before someone opened a door and he ran. I am trembling and scared to walk to work tomorrow.",
+    "labels": ["psychological_support", "protection_safeguarding", "sexual_violence_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-042",
+    "synthetic": true,
+    "text": "My friend is pregnant after an assault three months ago and her family told her not to come home. She needs prenatal care and a safe place to stay.",
+    "labels": ["medical_support", "social_support", "sexual_violence_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-043",
+    "synthetic": true,
+    "text": "I feel numb and cannot sleep for four days after what happened at the guesthouse. I do not want to see anyone.",
+    "labels": ["psychological_support", "sexual_violence_support"],
+    "is_urgent": 0,
+    "language_style": "euphemistic",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-044",
+    "synthetic": true,
+    "text": "nose bleeding he pushed me against the wall kirkos",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-045",
+    "synthetic": true,
+    "text": "I want to withdraw a police statement I made last month or ask a lawyer what happens next in court because his family is pressuring me to settle.",
+    "labels": ["legal_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-046",
+    "synthetic": true,
+    "text": "My cousin in Yeka says her employer hits her whenever she breaks a plate and refuses to give back her kebele ID card. She is 17 years old.",
+    "labels": ["protection_safeguarding", "legal_support", "social_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-047",
+    "synthetic": true,
+    "text": "Someone forced me into a car near Bole Medhanialem last night and assaulted me before leaving me near the road. My body is sore and I am terrified.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-048",
+    "synthetic": true,
+    "text": "I lost my job after missing shifts due to domestic conflict and cannot buy school supplies or food for my daughter this week.",
+    "labels": ["social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-049",
+    "synthetic": true,
+    "text": "My brother-in-law waits until everyone leaves for market and locks the front door so I cannot get out. Nothing bad happened yet today, just his hands on my shoulders, but I am afraid.",
+    "labels": ["protection_safeguarding", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-050",
+    "synthetic": true,
+    "text": "scared to go home tonight husband drunk",
+    "labels": ["protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-051",
+    "synthetic": true,
+    "text": "I need information about getting a restraining order in Addis Ababa. My ex-husband keeps showing up at my shop in Merkato and breaking things.",
+    "labels": ["legal_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-052",
+    "synthetic": true,
+    "text": "A close friend was sexually assaulted last week and keeps saying she wants to disappear. We are staying with her right now and need crisis counseling help.",
+    "labels": ["psychological_support", "sexual_violence_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-053",
+    "synthetic": true,
+    "text": "After an argument last night my partner choked me until I saw black spots. My throat still hurts when I swallow.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-054",
+    "synthetic": true,
+    "text": "I want to talk to a female counselor about ongoing emotional abuse from my in-laws. There is no physical hitting, just constant insults and threats to take my baby.",
+    "labels": ["psychological_support", "legal_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-055",
+    "synthetic": true,
+    "text": "My fiance expects things in the bedroom that hurt me and gets angry if I cry or pull away. Is there anyone I can speak with privately?",
+    "labels": ["sexual_violence_support", "psychological_support", "medical_support"],
+    "is_urgent": 0,
+    "language_style": "euphemistic",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-056",
+    "synthetic": true,
+    "text": "touched me on the bus feel sick",
+    "labels": ["sexual_violence_support", "psychological_support"],
+    "is_urgent": 0,
+    "language_style": "distressed_fragmented",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-057",
+    "synthetic": true,
+    "text": "Can a clinic check me without calling my parents? Yesterday a neighbor pushed me into his room and forced himself on me. I am 19 and live near Lideta.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-058",
+    "synthetic": true,
+    "text": "My neighbor's daughter is 14 and stays outside late because she says her stepfather shouts and throws shoes at her. Who handles child protection referrals here?",
+    "labels": ["protection_safeguarding", "social_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-059",
+    "synthetic": true,
+    "text": "I broke up with him two months ago, and now I just need help finding a support group for women rebuilding after domestic violence.",
+    "labels": ["psychological_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-060",
+    "synthetic": true,
+    "text": "Something happened with a taxi driver on the way back from Kazanchis tonight. My clothes are torn and I cannot stop shaking.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-061",
+    "synthetic": true,
+    "text": "please need shelter tonight 2 kids",
+    "labels": ["protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-062",
+    "synthetic": true,
+    "text": "My husband hit my ear two days ago and I still hear ringing and feel dizzy when I stand up. He went to work now so I have an hour to get checked.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-063",
+    "synthetic": true,
+    "text": "A man in my apartment building keeps sending me unwanted messages and slipped a threatening note under my door in Yeka yesterday.",
+    "labels": ["protection_safeguarding", "legal_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-064",
+    "synthetic": true,
+    "text": "My coworker says she was assaulted by her ex last night and has a cut on her forehead, she refuses to go to a big hospital because she thinks people will stare.",
+    "labels": ["medical_support", "protection_safeguarding", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-065",
+    "synthetic": true,
+    "text": "He made me feel like I owed him my body because he paid my rent in Bole. When I tried to leave the room he blocked the door and held me down.",
+    "labels": ["sexual_violence_support", "medical_support", "protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-066",
+    "synthetic": true,
+    "text": "I need legal aid to divide shared property and get protection from harassment during my divorce in Kirkos.",
+    "labels": ["legal_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-067",
+    "synthetic": true,
+    "text": "cant stop crying after what happened last night",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "distressed_fragmented",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-068",
+    "synthetic": true,
+    "text": "My boyfriend slapped me and took all my saved cash from my drawer before leaving. Now I cannot pay for transport or groceries this week.",
+    "labels": ["social_support", "protection_safeguarding", "legal_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-069",
+    "synthetic": true,
+    "text": "My younger sister came back from a job interview in Bole looking pale and silent. She finally whispered that the interviewer locked the office and hurt her.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-070",
+    "synthetic": true,
+    "text": "I had to leave my room in a hurry at 5am because my partner picked up a heavy metal rod during an argument. I am waiting at a cafe near Bole Michael.",
+    "labels": ["protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-071",
+    "synthetic": true,
+    "text": "Where can I get free STI testing and emergency contraception today after a non-consensual encounter yesterday evening?",
+    "labels": ["medical_support", "sexual_violence_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-072",
+    "synthetic": true,
+    "text": "My partner threatens to hurt himself whenever I talk about separating, and I feel trapped and exhausted mentally.",
+    "labels": ["psychological_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-073",
+    "synthetic": true,
+    "text": "arm cut bad husband angry",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-074",
+    "synthetic": true,
+    "text": "I was harassed at my workplace six months ago and resigned. Now I want advice on whether I can claim unpaid salary and report the manager.",
+    "labels": ["legal_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-075",
+    "synthetic": true,
+    "text": "He says a wife cannot say no and hurts me almost every week when he comes back late. My body feels broken and I do not know if clinics consider this an emergency.",
+    "labels": ["medical_support", "sexual_violence_support", "protection_safeguarding", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-076",
+    "synthetic": true,
+    "text": "My friend lives in Gullele and her husband burned her college certificates and locks the door when he leaves for work. She asked me to message for help.",
+    "labels": ["protection_safeguarding", "legal_support", "social_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-077",
+    "synthetic": true,
+    "text": "I need trauma therapy. Two years after escaping violence, sudden shouting still makes me freeze and shake.",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-078",
+    "synthetic": true,
+    "text": "Two men cornered me near an ATM in Bole at dusk, grabbed my phone, and one groped me before a guard shouted. My knee is scraped from falling.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-079",
+    "synthetic": true,
+    "text": "No one believes a woman when she has no bruises, yet he keeps pushing me into corners and taking away my house key so I cannot attend night classes.",
+    "labels": ["protection_safeguarding", "psychological_support", "legal_support"],
+    "is_urgent": 0,
+    "language_style": "euphemistic",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-080",
+    "synthetic": true,
+    "text": "need safe place now",
+    "labels": ["protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-081",
+    "synthetic": true,
+    "text": "I am helping my cousin who is 15 in Akaky Kaliti. She told me a neighborhood shopkeeper gives her snacks and forces her to stay in the back room.",
+    "labels": ["protection_safeguarding", "sexual_violence_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-082",
+    "synthetic": true,
+    "text": "My ex-partner smashed my windshield outside my workplace in Kirkos this afternoon and shouted that he will wait for me at closing time.",
+    "labels": ["protection_safeguarding", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-083",
+    "synthetic": true,
+    "text": "I need help finding temporary childcare and emergency food vouchers while I recover from surgery caused by an injury at home.",
+    "labels": ["social_support", "medical_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-084",
+    "synthetic": true,
+    "text": "I went to his place for coffee and he would not open the latch until I did what he asked. That was eight hours ago and I feel sick to my stomach.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-085",
+    "synthetic": true,
+    "text": "My husband hit my back with a wooden chair last week. The pain did not go away and now I can barely lift my baby.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-086",
+    "synthetic": true,
+    "text": "Just asking generally: if someone moves to a safe house in Addis Ababa, can their children stay with them and attend nearby schools?",
+    "labels": ["social_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-087",
+    "synthetic": true,
+    "text": "he took my money and phone nowhere to sleep",
+    "labels": ["social_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-088",
+    "synthetic": true,
+    "text": "My roommate in Bole was sexually assaulted at a party two days ago and is scared the clinic will refuse to treat her without a police letter first.",
+    "labels": ["medical_support", "sexual_violence_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-089",
+    "synthetic": true,
+    "text": "Every time I get paid, my partner forces me to hand over my bank card and threatens me if I buy medicine for my mother.",
+    "labels": ["legal_support", "social_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-090",
+    "synthetic": true,
+    "text": "I feel hopeless and had thoughts today that it would be easier not to wake up after everything my family has put me through since the assault.",
+    "labels": ["psychological_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-091",
+    "synthetic": true,
+    "text": "An older relative keeps making me sit close to him and touches under my scarf whenever nobody is in the living room. I hate going to family dinners.",
+    "labels": ["sexual_violence_support", "protection_safeguarding", "psychological_support"],
+    "is_urgent": 0,
+    "language_style": "euphemistic",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-092",
+    "synthetic": true,
+    "text": "My neighbor is shouting through our shared wall and kicked my front door open an hour ago. I ran to my sister's shop in Kirkos.",
+    "labels": ["protection_safeguarding", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-093",
+    "synthetic": true,
+    "text": "bleeding after assault last night need hospital",
+    "labels": ["medical_support", "sexual_violence_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-094",
+    "synthetic": true,
+    "text": "I need advice on child support and legal separation. My husband abandoned us after being violent last year and refuses to help with rent.",
+    "labels": ["legal_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-095",
+    "synthetic": true,
+    "text": "A student in my class told me she cannot sit straight because her uncle beat her with a cable yesterday for coming home late from tutorial.",
+    "labels": ["medical_support", "protection_safeguarding", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-096",
+    "synthetic": true,
+    "text": "My boyfriend never leaves bruises where people can see, only pulls my hair and presses a pillow over my face until I promise not to call my friends.",
+    "labels": ["medical_support", "protection_safeguarding", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-097",
+    "synthetic": true,
+    "text": "I survived sexual violence three years ago in another city. I recently moved to Addis Ababa and want a trauma-informed counselor.",
+    "labels": ["psychological_support", "sexual_violence_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-098",
+    "synthetic": true,
+    "text": "A man keeps waiting outside my university gate in Arada and following me onto the light rail even though I blocked his number twice.",
+    "labels": ["protection_safeguarding", "legal_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-099",
+    "synthetic": true,
+    "text": "hurt my head when he pushed me feel nauseous",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-100",
+    "synthetic": true,
+    "text": "I left my house with only my phone and 100 birr after my brother attacked me. I am safe at a friend's place tonight, but I need a long-term shelter or financial aid.",
+    "labels": ["social_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-101",
+    "synthetic": true,
+    "text": "Writing for my friend who does not speak English well. Her husband choked her this morning in Bole and she has red marks on her neck and cannot speak loudly.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-102",
+    "synthetic": true,
+    "text": "Something unwanted happened with my employer's son while cleaning the guest room last night. I feel trapped because I live in their compound and have no bus fare back to my hometown.",
+    "labels": ["sexual_violence_support", "protection_safeguarding", "social_support", "medical_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-103",
+    "synthetic": true,
+    "text": "I want to learn how to protect myself legally from online blackmail. Someone edited my photos and is sending them to coworkers.",
+    "labels": ["legal_support", "psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-104",
+    "synthetic": true,
+    "text": "My partner threw boiling tea toward me during an argument an hour ago. My forearm is blistered and hurting badly.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-105",
+    "synthetic": true,
+    "text": "can barely sleep shaking all night",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "distressed_fragmented",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-106",
+    "synthetic": true,
+    "text": "My daughter is 13 and says a boy at school touched her without consent in the hallway and threatened to hit her if she tells the teacher. Who can help us?",
+    "labels": ["protection_safeguarding", "sexual_violence_support", "legal_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-107",
+    "synthetic": true,
+    "text": "I am physically safe now in Arada, and I already saw a doctor last month, so I only need legal help to file for divorce and get my belongings back.",
+    "labels": ["legal_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-108",
+    "synthetic": true,
+    "text": "The man I used to date appeared outside my hostel tonight holding a bottle and yelling my name. The guard asked him to leave, but I am afraid he will wait near the corner.",
+    "labels": ["protection_safeguarding", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-109",
+    "synthetic": true,
+    "text": "I agreed to meet him to talk about our breakup, and instead he took my phone, closed the curtains, and would not let me stand up until he finished.",
+    "labels": ["sexual_violence_support", "medical_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-110",
+    "synthetic": true,
+    "text": "I need emotional support and advice on setting boundaries after constant verbal humiliation from my partner.",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-111",
+    "synthetic": true,
+    "text": "assaulted yesterday evening hurt inside dont want police",
+    "labels": ["medical_support", "sexual_violence_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-112",
+    "synthetic": true,
+    "text": "My neighbor came to my house barefoot with a bruised eye because her husband locked her out after beating her. Where can she sleep safely tonight in Nifas Silk-Lafto?",
+    "labels": ["protection_safeguarding", "medical_support", "social_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-113",
+    "synthetic": true,
+    "text": "I was sexually assaulted five days ago. I finally told a friend today and I want a medical check for infections plus someone to talk to.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-114",
+    "synthetic": true,
+    "text": "He says if I take the children and leave, he will tell everyone I am crazy and have me arrested. Is there a free lawyer who explains mothers' rights?",
+    "labels": ["legal_support", "psychological_support"],
+    "is_urgent": 0,
+    "language_style": "euphemistic",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-115",
+    "synthetic": true,
+    "text": "A group of men harassed me and threw water on me near the bus station today. I got away without injury, just feeling very upset and unsafe commuting.",
+    "labels": ["psychological_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-116",
+    "synthetic": true,
+    "text": "he has a knife in the kitchen i am outside",
+    "labels": ["protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-117",
+    "synthetic": true,
+    "text": "I am asking for my classmate in Bole. She fainted after her boyfriend hit her head against the wardrobe last night and she is refusing to wake up easily.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-118",
+    "synthetic": true,
+    "text": "I have been staying at my aunt's house for two weeks after leaving a violent home. I need help with food and finding a small room I can afford.",
+    "labels": ["social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-119",
+    "synthetic": true,
+    "text": "My boss keeps finding reasons to make me stay until 8pm alone in the office and stands right behind my chair touching my neck.",
+    "labels": ["sexual_violence_support", "legal_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "euphemistic",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-120",
+    "synthetic": true,
+    "text": "I suffered domestic abuse for years and finally got a divorce last year. Now I just need regular mental health counseling to rebuild my confidence.",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-121",
+    "synthetic": true,
+    "text": "My partner beat me with a shoe and kicked my stomach this morning. I am two months pregnant and cramping badly.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-122",
+    "synthetic": true,
+    "text": "cant stop vomiting scared after what he gave me to drink",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-123",
+    "synthetic": true,
+    "text": "I work in a salon in Bole and a regular customer grabbed me in the back washroom today. My manager told me to stay quiet so we do not lose business.",
+    "labels": ["sexual_violence_support", "legal_support", "psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-124",
+    "synthetic": true,
+    "text": "My friend is 17 and her uncle keeps locking her out on the balcony at night when she refuses to give him her part-time wages and yells terrible things.",
+    "labels": ["protection_safeguarding", "social_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-125",
+    "synthetic": true,
+    "text": "I did not have strength to fight back when my husband forced himself on me last night after drinking. I have pain and feel numb.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-126",
+    "synthetic": true,
+    "text": "Someone stole my handbag and shoved me hard onto the pavement near Kazanchis. My knee is scraped and I lost my house key and phone.",
+    "labels": ["medical_support", "social_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-127",
+    "synthetic": true,
+    "text": "I want to talk to someone about whether I can press charges for an assault that happened four months ago when I was too scared to speak.",
+    "labels": ["legal_support", "psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-128",
+    "synthetic": true,
+    "text": "he took my passport and locked the gate",
+    "labels": ["protection_safeguarding", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-129",
+    "synthetic": true,
+    "text": "My sister is hiding at a neighbor's shop in Kolfe Keranio because her partner threatened to burn her clothes and hit her if she returns tonight.",
+    "labels": ["protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-130",
+    "synthetic": true,
+    "text": "Every night I replay the attack in my head and cannot concentrate at my clinic job. I do not need a shelter, just psychological support.",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-131",
+    "synthetic": true,
+    "text": "He says nobody will believe a domestic worker over a wealthy house owner, and every time the family travels he comes to my room uninvited.",
+    "labels": ["sexual_violence_support", "protection_safeguarding", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-132",
+    "synthetic": true,
+    "text": "A man grabbed my arm and slapped me in front of my shop in Merkato over a rent dispute. My eye is bruised and I want to file a police report.",
+    "labels": ["medical_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-133",
+    "synthetic": true,
+    "text": "need someone to talk to feel hopeless",
+    "labels": ["psychological_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-134",
+    "synthetic": true,
+    "text": "My aunt told me she has not eaten for two days because she ran away from her abusive husband in Akaky Kaliti without any money.",
+    "labels": ["social_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-135",
+    "synthetic": true,
+    "text": "I am looking for legal guidance about getting a protection order against an ex-fiance who keeps showing up at my church and workplace in Yeka.",
+    "labels": ["legal_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-136",
+    "synthetic": true,
+    "text": "When I refused to sleep with my landlord's son last week, he cut off the water to my room and told me I must leave by Friday.",
+    "labels": ["legal_support", "social_support", "protection_safeguarding", "sexual_violence_support"],
+    "is_urgent": 0,
+    "language_style": "euphemistic",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-137",
+    "synthetic": true,
+    "text": "I was sexually assaulted early this morning near Sarbet. I need urgent medical care for HIV prevention and emotional support without having to repeat my story five times.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-138",
+    "synthetic": true,
+    "text": "My mother and I are safe in a rented room now, and we only need assistance paying this month's rent and school fees for my younger brother.",
+    "labels": ["social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-139",
+    "synthetic": true,
+    "text": "boyfriend hit my face ear ringing bole",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-140",
+    "synthetic": true,
+    "text": "My neighbor is asking if there is a safe shelter in Addis Ababa for women with teenage daughters. Her husband has been threatening them for weeks.",
+    "labels": ["protection_safeguarding", "social_support"],
+    "is_urgent": 0,
+    "language_style": "third_person",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-141",
+    "synthetic": true,
+    "text": "I felt dizzy after drinking tea at a colleague's house and realized later he had taken off my clothes. I woke up sore and confused three hours ago.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-142",
+    "synthetic": true,
+    "text": "My husband broke my phone and hit my back with a broom handle yesterday. Today I went to work with back pain and I want to know if I should see a doctor and lawyer.",
+    "labels": ["medical_support", "legal_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-143",
+    "synthetic": true,
+    "text": "I feel very depressed and anxious since losing my home after a family conflict, though nobody hit me physically.",
+    "labels": ["psychological_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-144",
+    "synthetic": true,
+    "text": "man following me from taxi stop afraid to walk",
+    "labels": ["protection_safeguarding", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-145",
+    "synthetic": true,
+    "text": "Asking for a 15-year-old girl from my church in Yeka who told me her stepbrother touches her when nobody is home and threatens to break her phone.",
+    "labels": ["protection_safeguarding", "sexual_violence_support", "legal_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-146",
+    "synthetic": true,
+    "text": "My ex-partner keeps posting lies about me on Telegram and messaging my boss to get me fired.",
+    "labels": ["legal_support", "psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-147",
+    "synthetic": true,
+    "text": "I left my house because my uncle kept trying to come into my room after midnight and told me a girl shouldn't make noise. I slept on a friend's floor last night.",
+    "labels": ["protection_safeguarding", "sexual_violence_support", "social_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-148",
+    "synthetic": true,
+    "text": "I need emergency medical attention for a deep cut on my hand after stopping my husband from throwing a glass bottle at my face.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-149",
+    "synthetic": true,
+    "text": "How can a survivor apply for free legal representation in Addis Ababa if her husband took all household savings?",
+    "labels": ["legal_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-150",
+    "synthetic": true,
+    "text": "dont want to live anymore too much pain after what he did",
+    "labels": ["psychological_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-151",
+    "synthetic": true,
+    "text": "My sister is afraid to go to the clinic because she has bruises on her arms from her partner and thinks doctors automatically call the police.",
+    "labels": ["medical_support", "protection_safeguarding", "legal_support"],
+    "is_urgent": 0,
+    "language_style": "third_person",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-152",
+    "synthetic": true,
+    "text": "Someone grabbed me inappropriately in a crowded taxi near Mexico Square and whispered threats when I pushed his hand away.",
+    "labels": ["sexual_violence_support", "psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-153",
+    "synthetic": true,
+    "text": "He says if I go to my mother's house tonight he will come there and break the windows, so I am sitting outside a pharmacy trying to decide what to do.",
+    "labels": ["protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-154",
+    "synthetic": true,
+    "text": "I need counseling and a women's support group after leaving a controlling relationship six months ago.",
+    "labels": ["psychological_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-155",
+    "synthetic": true,
+    "text": "Yesterday night I was raped by an acquaintance near Bole Atlas. I have not showered yet because I heard medical clinics can collect evidence, and I need emergency pills.",
+    "labels": ["medical_support", "sexual_violence_support", "legal_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-156",
+    "synthetic": true,
+    "text": "locked outside no shoes cold bole",
+    "labels": ["protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-157",
+    "synthetic": true,
+    "text": "My coworker's husband destroys her clothes before work every morning and refuses to give her bus money. She is safe right now at our office in Kirkos.",
+    "labels": ["protection_safeguarding", "social_support", "legal_support"],
+    "is_urgent": 0,
+    "language_style": "third_person",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-158",
+    "synthetic": true,
+    "text": "I did not want to do anything physical with him, yet he held my wrists and ignored me saying no. This happened 30 hours ago and I am worried about HIV or pregnancy.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-159",
+    "synthetic": true,
+    "text": "I need help preparing legal papers to evict an abusive ex-partner whose name is not on my apartment lease in Yeka.",
+    "labels": ["legal_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-160",
+    "synthetic": true,
+    "text": "My brother slapped me hard on the ear last night because I came home late from studying. My ear feels blocked and painful.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-161",
+    "synthetic": true,
+    "text": "cannot breathe panic attack after seeing him on street",
+    "labels": ["psychological_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-162",
+    "synthetic": true,
+    "text": "My friend is 16 and ran away from her aunt's house in Akaky Kaliti because her aunt's husband made sexual remarks and tried to pull her into the bedroom.",
+    "labels": ["protection_safeguarding", "sexual_violence_support", "social_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-163",
+    "synthetic": true,
+    "text": "I want advice on job skills and childcare support so I can afford to rent my own place away from my controlling family.",
+    "labels": ["social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-164",
+    "synthetic": true,
+    "text": "He waited until the electricity went out and forced himself near me in the dark corridor. I ran to a neighbor's door before it went further, though my shoulder is bruised.",
+    "labels": ["medical_support", "sexual_violence_support", "protection_safeguarding", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-165",
+    "synthetic": true,
+    "text": "My manager withheld my salary because I refused to go to dinner with him. I need a lawyer or labor office guidance.",
+    "labels": ["legal_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-166",
+    "synthetic": true,
+    "text": "I was physically attacked by my husband tonight in Lemi Kura and have a bleeding lip and broken glasses. I am at my cousin's house for the night.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-167",
+    "synthetic": true,
+    "text": "hurt bad at home need clinic no money",
+    "labels": ["medical_support", "social_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-168",
+    "synthetic": true,
+    "text": "My neighbor is an elderly woman whose son yells at her and takes her pension money every month. She asked me to check if social services can help.",
+    "labels": ["social_support", "protection_safeguarding", "legal_support"],
+    "is_urgent": 0,
+    "language_style": "third_person",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-169",
+    "synthetic": true,
+    "text": "After what happened between me and my boyfriend last night I keep crying and feel sore. He told me it is normal for couples so I shouldn't tell anyone.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-170",
+    "synthetic": true,
+    "text": "I would like to speak with a therapist about nightmares and fear of leaving my apartment after an attempted robbery and assault last month.",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-171",
+    "synthetic": true,
+    "text": "My partner threw me against the kitchen table today and my ribs hurt whenever I take a deep breath. He also locked the spare key inside.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-172",
+    "synthetic": true,
+    "text": "ex waiting outside my office scared",
+    "labels": ["protection_safeguarding", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-173",
+    "synthetic": true,
+    "text": "My friend is asking about emergency medical care after sexual violence 40 hours ago in Bole. She does not want to speak to police yet, only doctors and a counselor.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-174",
+    "synthetic": true,
+    "text": "I left an unsafe marriage two months ago and need legal help updating my child's school guardianship and getting food support.",
+    "labels": ["legal_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-175",
+    "synthetic": true,
+    "text": "He acts nice in front of neighbors, then once the curtain closes he twists my arm behind my back and tells me I have nowhere to go without his money.",
+    "labels": ["protection_safeguarding", "medical_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "euphemistic",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-176",
+    "synthetic": true,
+    "text": "I need legal advice because a former colleague keeps calling my family to spread rumors after I rejected him.",
+    "labels": ["legal_support", "psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-177",
+    "synthetic": true,
+    "text": "Two hours ago a man followed me into a dark hallway near Meskel Square, covered my mouth, and assaulted me. I am bleeding and shaken.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-178",
+    "synthetic": true,
+    "text": "no money for bus or room tonight left home",
+    "labels": ["social_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-179",
+    "synthetic": true,
+    "text": "My cousin in Lideta says her stepfather hits her younger brother and threatens her when she tries to stop him. Both children are under 15.",
+    "labels": ["protection_safeguarding", "legal_support", "social_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-180",
+    "synthetic": true,
+    "text": "I feel empty and exhausted after months of being yelled at and blamed for everything at home. I just need someone safe to talk to.",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-181",
+    "synthetic": true,
+    "text": "I cannot wear short sleeves because of the marks from last night, and I am scared tonight will be worse when he comes back from the bar.",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-182",
+    "synthetic": true,
+    "text": "Is there a center that offers both trauma therapy and job training for survivors in Bole or Yeka?",
+    "labels": ["psychological_support", "social_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-183",
+    "synthetic": true,
+    "text": "my arm hurts so much he twisted it bole",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-184",
+    "synthetic": true,
+    "text": "My sister was forced into marriage when she was 16 and now her husband beats her whenever she tries to visit our mother in Arada.",
+    "labels": ["protection_safeguarding", "legal_support", "medical_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-185",
+    "synthetic": true,
+    "text": "After I said I wanted a break, he showed up at midnight and refused to leave until I let him stay in my bed. Now I feel awful and anxious.",
+    "labels": ["sexual_violence_support", "psychological_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "euphemistic",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-186",
+    "synthetic": true,
+    "text": "I need legal help filing a complaint after a police officer ignored my first report about my abusive ex-husband threatening my shop.",
+    "labels": ["legal_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-187",
+    "synthetic": true,
+    "text": "Someone assaulted me in a dark street in Gullele 12 hours ago. I have bruises on my legs, torn clothes, and need PEP medication immediately.",
+    "labels": ["medical_support", "sexual_violence_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Gullele"
+  },
+  {
+    "id": "syn-188",
+    "synthetic": true,
+    "text": "scared at home right now yelling and throwing things",
+    "labels": ["protection_safeguarding", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-189",
+    "synthetic": true,
+    "text": "My colleague asked me to look up counseling services for her. She experienced domestic violence years ago and struggles with trust and sleep.",
+    "labels": ["psychological_support"],
+    "is_urgent": 0,
+    "language_style": "third_person",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-190",
+    "synthetic": true,
+    "text": "The driver locked the doors of the contract taxi and made me feel unsafe until I paid extra and promised not to look at his plate. I got out safely but keep shaking.",
+    "labels": ["psychological_support", "legal_support"],
+    "is_urgent": 0,
+    "language_style": "euphemistic",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-191",
+    "synthetic": true,
+    "text": "I need a safe house for three days while I arrange bus tickets to go back to my parents' region after escaping my abusive husband in Akaky Kaliti.",
+    "labels": ["protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Akaky Kaliti"
+  },
+  {
+    "id": "syn-192",
+    "synthetic": true,
+    "text": "I have pain in my jaw and blurred vision in one eye after being hit last night. Where can I go for urgent care in Lideta?",
+    "labels": ["medical_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Lideta"
+  },
+  {
+    "id": "syn-193",
+    "synthetic": true,
+    "text": "need lawyer for custody and protection",
+    "labels": ["legal_support", "protection_safeguarding"],
+    "is_urgent": 0,
+    "language_style": "distressed_fragmented",
+    "subcity": "Lemi Kura"
+  },
+  {
+    "id": "syn-194",
+    "synthetic": true,
+    "text": "My sister-in-law called crying from Kirkos saying her husband threw her phone in water and slapped her in front of the baby. She is asking where she can go.",
+    "labels": ["protection_safeguarding", "social_support", "medical_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Kirkos"
+  },
+  {
+    "id": "syn-195",
+    "synthetic": true,
+    "text": "Nothing physical happened today, only he stood by the door with heavy eyes and told me I wouldn't leave this house alive if I embarrassed him again.",
+    "labels": ["protection_safeguarding", "psychological_support", "legal_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Nifas Silk-Lafto"
+  },
+  {
+    "id": "syn-196",
+    "synthetic": true,
+    "text": "I am looking for emergency food assistance and warm blankets for myself and my two kids after leaving an unsafe home yesterday.",
+    "labels": ["social_support", "protection_safeguarding"],
+    "is_urgent": 1,
+    "language_style": "direct",
+    "subcity": "Arada"
+  },
+  {
+    "id": "syn-197",
+    "synthetic": true,
+    "text": "Can a doctor document old scars from domestic violence for a court case even if the injuries happened several months ago?",
+    "labels": ["legal_support", "medical_support"],
+    "is_urgent": 0,
+    "language_style": "direct",
+    "subcity": "Bole"
+  },
+  {
+    "id": "syn-198",
+    "synthetic": true,
+    "text": "felt pressured into sex now scared and hurting",
+    "labels": ["sexual_violence_support", "medical_support", "psychological_support"],
+    "is_urgent": 1,
+    "language_style": "distressed_fragmented",
+    "subcity": "Yeka"
+  },
+  {
+    "id": "syn-199",
+    "synthetic": true,
+    "text": "My neighbor asked me to message OneDoor because she cannot read English. Her husband hits her regularly in Kolfe Keranio and she needs shelter and legal help.",
+    "labels": ["protection_safeguarding", "legal_support", "social_support"],
+    "is_urgent": 1,
+    "language_style": "third_person",
+    "subcity": "Kolfe Keranio"
+  },
+  {
+    "id": "syn-200",
+    "synthetic": true,
+    "text": "He told me if I tell the nurse what really caused my bruised ribs, he will stop paying my college fees. I still want someone to check my chest privately.",
+    "labels": ["medical_support", "protection_safeguarding", "social_support"],
+    "is_urgent": 1,
+    "language_style": "euphemistic",
+    "subcity": "Gullele"
+  }
+]
